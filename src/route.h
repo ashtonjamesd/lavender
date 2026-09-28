@@ -2,7 +2,7 @@
 #define route_h
 
 #include "common.h"
-#include "strings.h"
+#include "str.h"
 
 #include "request.h"
 #include "response.h"

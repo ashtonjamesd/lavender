@@ -1,6 +1,6 @@
 #include "server.h"
 
-#include "strings.h"
+#include "str.h"
 
 #include <signal.h>
 #include <unistd.h>

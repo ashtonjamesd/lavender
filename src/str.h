@@ -1,5 +1,5 @@
-#ifndef strings_h
-#define strings_h
+#ifndef str_h
+#define str_h
 
 #include "common.h"
 

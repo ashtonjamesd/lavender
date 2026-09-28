@@ -3,7 +3,7 @@
 
 #include "common.h"
 
-#include "strings.h"
+#include "str.h"
 #include "route.h"
 #include "server.h"
 
