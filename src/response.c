@@ -1,7 +1,7 @@
 #include "response.h"
 
 Response
-respond (HttpStatus status, cString body) {
+respond (HttpStatus status, char *body) {
 
     return (Response) {
         .status = status,
@@ -10,343 +10,343 @@ respond (HttpStatus status, cString body) {
 }
 
 Response
-ok (cString body) {
+ok (char *body) {
 
     return respond(HttpStatusOk, body);
 }
 
 Response
-created (cString body) {
+created (char *body) {
 
     return respond(HttpStatusCreated, body);
 }
 
 Response
-accepted (cString body) {
+accepted (char *body) {
 
     return respond(HttpStatusAccepted, body);
 }
 
 Response
-nonAuthoritativeInformation (cString body) {
+nonAuthoritativeInformation (char *body) {
 
     return respond(HttpStatusNonAuthoritativeInformation, body);
 }
 
 Response
-noContent (cString body) {
+noContent (char *body) {
 
     return respond(HttpStatusNoContent, body);
 }
 
 Response
-resetContent (cString body) {
+resetContent (char *body) {
 
     return respond(HttpStatusResetContent, body);
 }
 
 Response
-partialContent (cString body) {
+partialContent (char *body) {
 
     return respond(HttpStatusPartialContent, body);
 }
 
 Response
-multiStatus (cString body) {
+multiStatus (char *body) {
 
     return respond(HttpStatusMultiStatus, body);
 }
 
 Response
-alreadyReported (cString body) {
+alreadyReported (char *body) {
 
     return respond(HttpStatusAlreadyReported, body);
 }
 
 Response
-imUsed (cString body) {
+imUsed (char *body) {
 
     return respond(HttpStatusImUsed, body);
 }
 
 Response
-multipleChoices (cString body) {
+multipleChoices (char *body) {
 
     return respond(HttpStatusMultipleChoices, body);
 }
 
 Response
-movedPermanently (cString body) {
+movedPermanently (char *body) {
 
     return respond(HttpStatusMovedPermanently, body);
 }
 
 Response
-found (cString body) {
+found (char *body) {
 
     return respond(HttpStatusFound, body);
 }
 
 Response
-seeOther (cString body) {
+seeOther (char *body) {
 
     return respond(HttpStatusSeeOther, body);
 }
 
 Response
-notModified (cString body) {
+notModified (char *body) {
 
     return respond(HttpStatusNotModified, body);
 }
 
 Response
-temporaryRedirect (cString body) {
+temporaryRedirect (char *body) {
 
     return respond(HttpStatusTemporaryRedirect, body);
 }
 
 Response
-permanentRedirect (cString body) {
+permanentRedirect (char *body) {
 
     return respond(HttpStatusPermanentRedirect, body);
 }
 
 Response
-badRequest (cString body) {
+badRequest (char *body) {
 
     return respond(HttpStatusBadRequest, body);
 }
 
 Response
-unauthorized (cString body) {
+unauthorized (char *body) {
 
     return respond(HttpStatusUnauthorized, body);
 }
 
 Response
-paymentRequired (cString body) {
+paymentRequired (char *body) {
 
     return respond(HttpStatusPaymentRequired, body);
 }
 
 Response
-forbidden (cString body) {
+forbidden (char *body) {
 
     return respond(HttpStatusForbidden, body);
 }
 
 Response
-notFound (cString body) {
+notFound (char *body) {
 
     return respond(HttpStatusNotFound, body);
 }
 
 Response
-methodNotAllowed (cString body) {
+methodNotAllowed (char *body) {
 
     return respond(HttpStatusMethodNotAllowed, body);
 }
 
 Response
-notAcceptable (cString body) {
+notAcceptable (char *body) {
 
     return respond(HttpStatusNotAcceptable, body);
 }
 
 Response
-proxyAuthenticationRequired (cString body) {
+proxyAuthenticationRequired (char *body) {
 
     return respond(HttpStatusProxyAuthenticationRequired, body);
 }
 
 Response
-requestTimeout (cString body) {
+requestTimeout (char *body) {
 
     return respond(HttpStatusRequestTimeout, body);
 }
 
 Response
-conflict (cString body) {
+conflict (char *body) {
 
     return respond(HttpStatusConflict, body);
 }
 
 Response
-gone (cString body) {
+gone (char *body) {
 
     return respond(HttpStatusGone, body);
 }
 
 Response
-lengthRequired (cString body) {
+lengthRequired (char *body) {
 
     return respond(HttpStatusLengthRequired, body);
 }
 
 Response
-preconditionFailed (cString body) {
+preconditionFailed (char *body) {
 
     return respond(HttpStatusPreconditionFailed, body);
 }
 
 Response
-contentTooLarge (cString body) {
+contentTooLarge (char *body) {
 
     return respond(HttpStatusContentTooLarge, body);
 }
 
 Response
-uriTooLong (cString body) {
+uriTooLong (char *body) {
 
     return respond(HttpStatusUriTooLong, body);
 }
 
 Response
-unsupportedMediaType (cString body) {
+unsupportedMediaType (char *body) {
 
     return respond(HttpStatusUnsupportedMediaType, body);
 }
 
 Response
-rangeNotSatisfiable (cString body) {
+rangeNotSatisfiable (char *body) {
 
     return respond(HttpStatusRangeNotSatisfiable, body);
 }
 
 Response
-expectationFailed (cString body) {
+expectationFailed (char *body) {
 
     return respond(HttpStatusExpectationFailed, body);
 }
 
 Response
-imATeapot (cString body) {
+imATeapot (char *body) {
 
     return respond(HttpStatusImATeapot, body);
 }
 
 Response
-misdirectedRequest (cString body) {
+misdirectedRequest (char *body) {
 
     return respond(HttpStatusMisdirectedRequest, body);
 }
 
 Response
-unprocessableContent (cString body) {
+unprocessableContent (char *body) {
 
     return respond(HttpStatusUnprocessableContent, body);
 }
 
 Response
-locked (cString body) {
+locked (char *body) {
 
     return respond(HttpStatusLocked, body);
 }
 
 Response
-failedDependency (cString body) {
+failedDependency (char *body) {
 
     return respond(HttpStatusFailedDependency, body);
 }
 
 Response
-tooEarly (cString body) {
+tooEarly (char *body) {
 
     return respond(HttpStatusTooEarly, body);
 }
 
 Response
-upgradeRequired (cString body) {
+upgradeRequired (char *body) {
 
     return respond(HttpStatusUpgradeRequired, body);
 }
 
 Response
-preconditionRequired (cString body) {
+preconditionRequired (char *body) {
 
     return respond(HttpStatusPreconditionRequired, body);
 }
 
 Response
-tooManyRequests (cString body) {
+tooManyRequests (char *body) {
 
     return respond(HttpStatusTooManyRequests, body);
 }
 
 Response
-requestHeaderFieldsTooLarge (cString body) {
+requestHeaderFieldsTooLarge (char *body) {
 
     return respond(HttpStatusRequestHeaderFieldsTooLarge, body);
 }
 
 Response
-unavailableForLegalReasons (cString body) {
+unavailableForLegalReasons (char *body) {
 
     return respond(HttpStatusUnavailableForLegalReasons, body);
 }
 
 Response
-internalServerError (cString body) {
+internalServerError (char *body) {
 
     return respond(HttpStatusInternalServerError, body);
 }
 
 Response
-notImplemented (cString body) {
+notImplemented (char *body) {
 
     return respond(HttpStatusNotImplemented, body);
 }
 
 Response
-badGateway (cString body) {
+badGateway (char *body) {
 
     return respond(HttpStatusBadGateway, body);
 }
 
 Response
-serviceUnavailable (cString body) {
+serviceUnavailable (char *body) {
 
     return respond(HttpStatusServiceUnavailable, body);
 }
 
 Response
-gatewayTimeout (cString body) {
+gatewayTimeout (char *body) {
 
     return respond(HttpStatusGatewayTimeout, body);
 }
 
 Response
-httpVersionNotSupported (cString body) {
+httpVersionNotSupported (char *body) {
 
     return respond(HttpStatusHttpVersionNotSupported, body);
 }
 
 Response
-variantAlsoNegotiates (cString body) {
+variantAlsoNegotiates (char *body) {
 
     return respond(HttpStatusVariantAlsoNegotiates, body);
 }
 
 Response
-insufficientStorage (cString body) {
+insufficientStorage (char *body) {
 
     return respond(HttpStatusInsufficientStorage, body);
 }
 
 Response
-loopDetected (cString body) {
+loopDetected (char *body) {
 
     return respond(HttpStatusLoopDetected, body);
 }
 
 Response
-notExtended (cString body) {
+notExtended (char *body) {
 
     return respond(HttpStatusNotExtended, body);
 }
 
 Response
-networkAuthenticationRequired (cString body) {
+networkAuthenticationRequired (char *body) {
 
     return respond(HttpStatusNetworkAuthenticationRequired, body);
 }

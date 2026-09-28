@@ -80,187 +80,186 @@ typedef struct Response Response;
 
 struct Response {
     HttpStatus status;
-    cString body;
+    char *body;
 
 };
 
-// builds a response with any status code
 Response
-respond (HttpStatus status, cString body);
+respond (HttpStatus status, char *body);
 
 // 2xx success
 Response
-ok (cString body);
+ok (char *body);
 
 Response
-created (cString body);
+created (char *body);
 
 Response
-accepted (cString body);
+accepted (char *body);
 
 Response
-nonAuthoritativeInformation (cString body);
+nonAuthoritativeInformation (char *body);
 
 Response
-noContent (cString body);
+noContent (char *body);
 
 Response
-resetContent (cString body);
+resetContent (char *body);
 
 Response
-partialContent (cString body);
+partialContent (char *body);
 
 Response
-multiStatus (cString body);
+multiStatus (char *body);
 
 Response
-alreadyReported (cString body);
+alreadyReported (char *body);
 
 Response
-imUsed (cString body);
+imUsed (char *body);
 
 // 3xx redirection
 Response
-multipleChoices (cString body);
+multipleChoices (char *body);
 
 Response
-movedPermanently (cString body);
+movedPermanently (char *body);
 
 Response
-found (cString body);
+found (char *body);
 
 Response
-seeOther (cString body);
+seeOther (char *body);
 
 Response
-notModified (cString body);
+notModified (char *body);
 
 Response
-temporaryRedirect (cString body);
+temporaryRedirect (char *body);
 
 Response
-permanentRedirect (cString body);
+permanentRedirect (char *body);
 
 // 4xx client errors
 Response
-badRequest (cString body);
+badRequest (char *body);
 
 Response
-unauthorized (cString body);
+unauthorized (char *body);
 
 Response
-paymentRequired (cString body);
+paymentRequired (char *body);
 
 Response
-forbidden (cString body);
+forbidden (char *body);
 
 Response
-notFound (cString body);
+notFound (char *body);
 
 Response
-methodNotAllowed (cString body);
+methodNotAllowed (char *body);
 
 Response
-notAcceptable (cString body);
+notAcceptable (char *body);
 
 Response
-proxyAuthenticationRequired (cString body);
+proxyAuthenticationRequired (char *body);
 
 Response
-requestTimeout (cString body);
+requestTimeout (char *body);
 
 Response
-conflict (cString body);
+conflict (char *body);
 
 Response
-gone (cString body);
+gone (char *body);
 
 Response
-lengthRequired (cString body);
+lengthRequired (char *body);
 
 Response
-preconditionFailed (cString body);
+preconditionFailed (char *body);
 
 Response
-contentTooLarge (cString body);
+contentTooLarge (char *body);
 
 Response
-uriTooLong (cString body);
+uriTooLong (char *body);
 
 Response
-unsupportedMediaType (cString body);
+unsupportedMediaType (char *body);
 
 Response
-rangeNotSatisfiable (cString body);
+rangeNotSatisfiable (char *body);
 
 Response
-expectationFailed (cString body);
+expectationFailed (char *body);
 
 Response
-imATeapot (cString body);
+imATeapot (char *body);
 
 Response
-misdirectedRequest (cString body);
+misdirectedRequest (char *body);
 
 Response
-unprocessableContent (cString body);
+unprocessableContent (char *body);
 
 Response
-locked (cString body);
+locked (char *body);
 
 Response
-failedDependency (cString body);
+failedDependency (char *body);
 
 Response
-tooEarly (cString body);
+tooEarly (char *body);
 
 Response
-upgradeRequired (cString body);
+upgradeRequired (char *body);
 
 Response
-preconditionRequired (cString body);
+preconditionRequired (char *body);
 
 Response
-tooManyRequests (cString body);
+tooManyRequests (char *body);
 
 Response
-requestHeaderFieldsTooLarge (cString body);
+requestHeaderFieldsTooLarge (char *body);
 
 Response
-unavailableForLegalReasons (cString body);
+unavailableForLegalReasons (char *body);
 
 // 5xx server errors
 Response
-internalServerError (cString body);
+internalServerError (char *body);
 
 Response
-notImplemented (cString body);
+notImplemented (char *body);
 
 Response
-badGateway (cString body);
+badGateway (char *body);
 
 Response
-serviceUnavailable (cString body);
+serviceUnavailable (char *body);
 
 Response
-gatewayTimeout (cString body);
+gatewayTimeout (char *body);
 
 Response
-httpVersionNotSupported (cString body);
+httpVersionNotSupported (char *body);
 
 Response
-variantAlsoNegotiates (cString body);
+variantAlsoNegotiates (char *body);
 
 Response
-insufficientStorage (cString body);
+insufficientStorage (char *body);
 
 Response
-loopDetected (cString body);
+loopDetected (char *body);
 
 Response
-notExtended (cString body);
+notExtended (char *body);
 
 Response
-networkAuthenticationRequired (cString body);
+networkAuthenticationRequired (char *body);
 
 #endif

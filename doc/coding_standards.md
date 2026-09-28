@@ -9,16 +9,16 @@ Function declarations and definitions are written as follows:
 - Left brace starts on the function signature line, and the right on a separate newline
 - Two newline characters must follow the left brace
 - Functions are written in camelCase
-- Parameters are written as 
+- Parameters are written as shown
 
 <br>
 
 ```
 static void
-myFunc (int p1, char *p2, float p3);
+myFunc (int p1, cString p2, float p3);
 
 static void
-myFunc (int p1, char *p2, float p3) {
+myFunc (int p1, cString p2, float p3) {
 
     // code starts here 
 }

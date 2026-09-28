@@ -4,7 +4,7 @@
 #include "mem.h"
 
 string 
-string_create (cString c_str) {
+string_create (char *c_str) {
 
     if (c_str == null) {
         return null_string();

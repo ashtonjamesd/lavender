@@ -23,7 +23,7 @@ struct string {
 #define null_string() make_string(0, 0, null)
 
 string 
-string_create (cString c_str);
+string_create (char *c_str);
 
 void 
 string_destroy (stringPtr s_ptr);

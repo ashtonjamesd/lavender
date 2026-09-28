@@ -5,24 +5,29 @@
 
 #include "strings.h"
 #include "route.h"
+#include "server.h"
 
 #define approute(name) Response name (Request request)
 
 #define within(app, group) \
     for (int _zxqj = (start_group(app, group), 1); _zxqj != 0; end_group(app), _zxqj = 0)
 
-    #define use
+#define use
 
 typedef struct App App, *AppPtr;
 
 struct App {
     u16 port;
+    bool debug;
+
+    // the http server interface
+    const Server *server;
 
     List(Route) routes;
     u32 routes_count;
     u32 routes_capacity;
 
-    List(cString) route_groups;
+    List(char *) route_groups;
     u32 route_groups_count;
     u32 route_groups_capacity;
 };
@@ -34,14 +39,17 @@ app (u16 port);
 void 
 run (AppPtr);
 
+void 
+debug (AppPtr, bool debug);
+
 void
-start_group (AppPtr app, cString name);
+start_group (AppPtr, char *name);
 
 void 
-end_group (AppPtr app);
+end_group (AppPtr);
 
 void
-register_route (AppPtr app, cString path, HttpType type, Controller controller);
+register_route (AppPtr, char *path, HttpType type, Controller controller);
 
 #define get(app, controller) \
     register_route(app, "/" #controller, HttpGet, controller);

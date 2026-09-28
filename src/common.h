@@ -22,7 +22,6 @@ typedef uint64_t u64, *u64Ptr;
 typedef size_t usize;
 typedef void * ptr;
 
-typedef char *cString;
 typedef char byte, *bytePtr;
 
 #define null NULL
