@@ -98,6 +98,8 @@ typedef struct {
 #define MAX_TESTS 5000
 
 static struct {
+    const char *name;
+
     RegisteredTest registry[MAX_TESTS];
     size_t count;
     bool has_only;
@@ -206,6 +208,14 @@ static void claim_skip(const char *msg) {
 
 #define describe(name) _CLAIM_DESCRIBE(name, __COUNTER__)
 
+#define _CLAIM_RUNNER_NAME(label, id) \
+    __attribute__((constructor)) void CONCAT_(claim_runner_name_, id)(void) { \
+        runner.name = label; \
+    }
+
+// names this test runner, printed before its results
+#define suite_name(label) _CLAIM_RUNNER_NAME(label, __COUNTER__)
+
 #define _CLAIM_HOOK(slot, id) \
     void CONCAT_(claim_hook_, id)(void); \
     __attribute__((constructor)) void CONCAT_(claim_register_hook_, id)(void) { \
@@ -258,7 +268,12 @@ static int test_results(int verbosity) {
     }
     setvbuf(runner.report, NULL, _IONBF, 0);
 
+    if (runner.name and verbosity < CLAIM_SILENT) {
+        printf("\nrunning %s tests\n", runner.name);
+    }
+
     double suite_start = claim_now_ms();
+    bool reported = false;
 
     for (size_t i = 0; i < runner.count; i++) {
         RegisteredTest *test = &runner.registry[i];
@@ -295,6 +310,7 @@ static int test_results(int verbosity) {
 
         if (WIFSIGNALED(status)) color = CLAIM_DARK_RED;
 
+        reported = true;
         printf("\n%s%s" CLAIM_RESET " ", color, label);
         if (test->group) printf("%s: ", test->group);
         printf("%s (%.1fms)\n", test->name, test_ms);
@@ -314,7 +330,10 @@ static int test_results(int verbosity) {
     double suite_ms = claim_now_ms() - suite_start;
 
     if (verbosity < CLAIM_SILENT) {
-        printf("\n%zu tests, %zu passed, %zu failed, %zu pending, %zu skipped in %.1fms\n",
+        // only separate the summary from failure details, not from the runner name
+        if (reported) printf("\n");
+
+        printf("%zu tests, %zu passed, %zu failed, %zu pending, %zu skipped in %.1fms\n",
             passed + failed, passed, failed, pending, skipped, suite_ms);
     }
 

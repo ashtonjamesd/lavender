@@ -57,7 +57,7 @@ method_name (HttpType type) {
     return "UNKNOWN";
 }
 
-static Route *
+Route *
 find_route (AppPtr app, HttpType type, const char *path, bool *path_matched) {
 
     usize path_len = strlen(path);

@@ -1,8 +1,10 @@
 SRCS = $(shell find src -name "*.c")
+LIB_SRCS = $(filter-out src/main.c, $(SRCS))
 
 CC = gcc
 CFLAGS = -Wall -Wextra -Werror $(shell pkg-config --cflags libmicrohttpd)
 LDLIBS = $(shell pkg-config --libs libmicrohttpd)
+TEST_FLAGS = -Wno-unused-function -fsanitize=address -g
 
 all:
 	mkdir -p build
@@ -10,13 +12,10 @@ all:
 
 test:
 	mkdir -p build
-	$(CC) test/str_test.c $(filter-out src/main.c, $(SRCS)) -Isrc $(CFLAGS) -Wno-unused-function -fsanitize=address -g $(LDLIBS) -o build/str_test
-	./build/str_test
-	$(CC) test/mem_test.c $(filter-out src/main.c, $(SRCS)) -Isrc $(CFLAGS) -Wno-unused-function -fsanitize=address -g $(LDLIBS) -o build/mem_test
-	./build/mem_test
+	for t in test/*_test.c; do $(CC) $$t $(LIB_SRCS) -Isrc $(CFLAGS) $(TEST_FLAGS) $(LDLIBS) -o build/$$(basename $$t .c) && ./build/$$(basename $$t .c) || exit 1; done
 
 examples:
 	mkdir -p build/example
-	for f in example/*.c; do $(CC) $$f $(filter-out src/main.c, $(SRCS)) -Isrc $(CFLAGS) $(LDLIBS) -o build/example/$$(basename $$f .c) || exit 1; done
+	for f in example/*.c; do $(CC) $$f $(LIB_SRCS) -Isrc $(CFLAGS) $(LDLIBS) -o build/example/$$(basename $$f .c) || exit 1; done
 
 .PHONY: all test examples

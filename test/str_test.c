@@ -1,7 +1,9 @@
 #include "claim.h"
 #include "str.h"
 
-// strings are not null-terminated, so compare by length and bytes
+suite_name ("string")
+
+
 static bool
 has_text (string s, const char *expected) {
 

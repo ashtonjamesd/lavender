@@ -1,6 +1,9 @@
 #include "claim.h"
 #include "common.h"
 
+suite_name ("memory")
+
+
 typedef struct Point Point;
 
 struct Point {

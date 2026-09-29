@@ -48,6 +48,9 @@ register_route (AppPtr, char *path, HttpType, Controller);
 void
 register_inferred_route (AppPtr, char *path, Controller);
 
+Route *
+find_route (AppPtr app, HttpType type, const char *path, bool *path_matched);
+
 // registers a GET route
 #define get(app, controller) \
     register_route(&(app), "/" #controller, HttpGet, controller);
