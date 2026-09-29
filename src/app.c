@@ -6,6 +6,9 @@
 #define initial_route_capacity 8
 #define initial_route_groups_capacity 4
 
+// lets only one controller run at a time unless the app is parallel
+static pthread_mutex_t controller_lock = PTHREAD_MUTEX_INITIALIZER;
+
 App 
 app (u16 port) {
     usize routes_initial_size = 
@@ -18,6 +21,7 @@ app (u16 port) {
         .host = "127.0.0.1",
         .port = port,
         .debug = false,
+        .parallel = false,
         .server = &microhttpd_server,
         .routes = alloc_bytes(routes_initial_size),
         .routes_capacity = initial_route_capacity,
@@ -31,6 +35,11 @@ app (u16 port) {
 void 
 debug (AppPtr app, bool debug) {
     app->debug = debug;
+}
+
+void
+parallel (AppPtr app, bool parallel) {
+    app->parallel = parallel;
 }
 
 void
@@ -109,8 +118,12 @@ dispatch (ptr context, Request request) {
         response = methodNotAllowed("method not allowed");
     } else if (route == null) {
         response = notFound("not found");
-    } else {
+    } else if (app->parallel) {
         response = route->controller(request);
+    } else {
+        with_mutex (&controller_lock) {
+            response = route->controller(request);
+        }
     }
 
     if (app->debug) {

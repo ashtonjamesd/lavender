@@ -1,109 +1,188 @@
 #include "lavender.h"
 
-static _Thread_local char buffer[256];
+typedef struct User User;
+struct User {
+    i64 id;
+    char name[64];
+    char email[128];
+    bool used;
 
-approute (home) {
-    return ok("todo api, see /api/v1/todo");
+};
+
+#define max_users 100
+static User users[max_users];
+static i64 next_id = 1;
+
+static void
+fill_user (JsonObject object, User *user) {
+
+    json_set_int(object, "id", user->id);
+    json_set_str(object, "name", user->name);
+    json_set_str(object, "email", user->email);
 }
 
-approute (health) {
-    return ok("ok");
+static JsonObject
+user_json (User *user) {
+
+    JsonObject object = json_new();
+    fill_user(object, user);
+
+    return object;
 }
 
-approute (get_todo) {
+// reads ?id=, returning 0 if it is missing or not a positive number
+static i64
+query_id (Request request) {
 
-    const char *id = query("id");
+    const char *text = query("id");
 
-    if (id == null) {
-        return ok("all todos");
+    if (text == null) {
+        return 0;
     }
 
-    snprintf(buffer, sizeof(buffer), "todo %s", id);
-    return ok(buffer);
+    char *end;
+    i64 id = strtoll(text, &end, 10);
+
+    return (*end == '\0' and id > 0) ? id : 0;
 }
 
-approute (create_todo) {
+static User *
+find_user (i64 id) {
 
-    if (request.body_len == 0) {
-        return badRequest("a todo needs some text");
+    for (u32 i = 0; i < max_users; i += 1) {
+        if (users[i].used and users[i].id == id) {
+            return &users[i];
+        }
     }
 
-    snprintf(buffer, sizeof(buffer), "created todo: %s", request.body);
-    return created(buffer);
+    return null;
 }
 
-approute (update_todo) {
+static User *
+free_slot (void) {
 
-    const char *id = query("id");
-
-    if (id == null) {
-        return badRequest("missing ?id=");
+    for (u32 i = 0; i < max_users; i += 1) {
+        if (!users[i].used) {
+            return &users[i];
+        }
     }
 
-    snprintf(buffer, sizeof(buffer), "updated todo %s", id);
-    return ok(buffer);
+    return null;
 }
 
-approute (delete_todo) {
+// GET /api/user?id=1
+approute (get_user) {
 
-    if (query("id") == null) {
-        return badRequest("missing ?id=");
+    i64 id = query_id(request);
+    if (id == 0) {
+        return json_error(badRequest, "id must be a positive number");
     }
+
+    User *user = find_user(id);
+    if (user == null) {
+        return json_error(notFound, "no such user");
+    }
+
+    return json(ok(json_write(user_json(user))));
+}
+
+// POST /api/user with {"name": "...", "email": "..."}
+approute (create_user) {
+
+    Json body = json_read(request);
+    if (!body.ok) {
+        return json_error(badRequest, "body must be a json object");
+    }
+
+    JsonValue *name = json_get(body, "name");
+    JsonValue *email = json_get(body, "email");
+
+    if (!json_is_str(name) or !json_is_str(email)) {
+        json_free(body);
+        return json_error(unprocessableContent, "name and email must be strings");
+    }
+
+    User *user = free_slot();
+
+    if (user == null) {
+        json_free(body);
+        return json_error(insufficientStorage, "too many users");
+    }
+
+    user->used = true;
+    user->id = next_id;
+    next_id += 1;
+
+    snprintf(user->name, sizeof(user->name), "%s", json_str(name));
+    snprintf(user->email, sizeof(user->email), "%s", json_str(email));
+
+    json_free(body);
+
+    return json(created(json_write(user_json(user))));
+}
+
+// PATCH /api/user?id=1 with {"name": "..."} and/or {"email": "..."}
+approute (update_user) {
+
+    i64 id = query_id(request);
+    if (id == 0) {
+        return json_error(badRequest, "missing or invalid ?id=");
+    }
+
+    User *user = find_user(id);
+    if (user == null) {
+        return json_error(notFound, "no such user");
+    }
+
+    Json body = json_read(request);
+    if (!body.ok) {
+        return json_error(badRequest, "body must be a json object");
+    }
+
+    JsonValue *name = json_get(body, "name");
+    JsonValue *email = json_get(body, "email");
+
+    if ((name != null and !json_is_str(name)) or (email != null and !json_is_str(email))) {
+        json_free(body);
+        return json_error(unprocessableContent, "name and email must be strings");
+    }
+
+    if (name != null) {
+        snprintf(user->name, sizeof(user->name), "%s", json_str(name));
+    }
+
+    if (email != null) {
+        snprintf(user->email, sizeof(user->email), "%s", json_str(email));
+    }
+
+    json_free(body);
+
+    return json(ok(json_write(user_json(user))));
+}
+
+// DELETE /api/user?id=1
+approute (delete_user) {
+
+    i64 id = query_id(request);
+    if (id == 0) {
+        return json_error(badRequest, "missing or invalid ?id=");
+    }
+
+    User *user = find_user(id);
+    if (user == null) {
+        return json_error(notFound, "no such user");
+    }
+    user->used = false;
 
     return noContent("");
-}
-
-approute (todo_options) {
-    return ok("GET, POST, PATCH, DELETE, OPTIONS");
-}
-
-approute (replace_todo) {
-    return ok("replaced every todo");
-}
-
-approute (get_stats) {
-
-    snprintf(buffer, sizeof(buffer), "stats for %s", request.path);
-    return ok(buffer);
-}
-
-approute (login) {
-
-    if (header("Authorization") == null) {
-        return unauthorized("missing Authorization header");
-    }
-
-    return ok("logged in");
 }
 
 int main() {
     App x = app(3000);
     debug(&x, true);
 
-    within (x, "some_route") {
-        root(x, home);
-    }
-
-
-    use(x, health);
-
     within (x, "api") {
-        within (x, "v1") {
-            resource(x, todo);
-
-            route(x, "options", HttpOptions, todo_options);
-
-            use(x, get_stats);
-            put(x, replace_todo);
-
-            within (x, "auth") {
-                post(x, login);
-            }
-        }
-
-        within (x, "v2") {
-            use(x, get_stats);
-        }
+        resource(x, user);
     }
 
     run(x);

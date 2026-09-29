@@ -3,6 +3,8 @@
 
 #include "common.h"
 
+#include <pthread.h>
+
 #include "str.h"
 #include "route.h"
 #include "server.h"
@@ -13,6 +15,7 @@ struct App {
     const char *host;
     u16 port;
     bool debug;
+    bool parallel;
 
     // the http server interface
     const Server *server;
@@ -40,6 +43,10 @@ debug (AppPtr, bool debug);
 // sets the address to listen on, "127.0.0.1" by default. "0.0.0.0" allows other devices
 void
 host (AppPtr, const char *host);
+
+// controllers will run without a mutex, and shared data must be managed manually
+void
+parallel (AppPtr, bool parallel);
 
 void
 start_group (AppPtr, char *name);
@@ -112,6 +119,13 @@ find_route (AppPtr app, HttpType type, const char *path, bool *path_matched);
         int _zxqj = (start_group(&(app), group), 1);  \
         _zxqj != 0; \
         end_group(&(app)), _zxqj = 0 \
+    )
+
+#define with_mutex(mutex) \
+    for ( \
+        int _lock_once = (pthread_mutex_lock(mutex), 1);  \
+        _lock_once != 0; \
+        pthread_mutex_unlock(mutex), _lock_once = 0 \
     )
 
 #endif
