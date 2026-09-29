@@ -3,6 +3,19 @@
 #include "common.h"
 #include "mem.h"
 
+
+string
+str (char *x) {
+
+    usize len = x == null ? 0 : strlen(x);
+
+    if (len == 0) {
+        return null_string();
+    }
+
+    return make_string(0, len, x);
+}
+
 string 
 string_create (char *c_str) {
 

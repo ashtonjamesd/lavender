@@ -12,6 +12,8 @@ test:
 	mkdir -p build
 	$(CC) test/str_test.c $(filter-out src/main.c, $(SRCS)) -Isrc $(CFLAGS) -Wno-unused-function -fsanitize=address -g $(LDLIBS) -o build/str_test
 	./build/str_test
+	$(CC) test/mem_test.c $(filter-out src/main.c, $(SRCS)) -Isrc $(CFLAGS) -Wno-unused-function -fsanitize=address -g $(LDLIBS) -o build/mem_test
+	./build/mem_test
 
 examples:
 	mkdir -p build/example

@@ -12,8 +12,6 @@ struct string {
     u32 capacity;
 };
 
-#define str(x) make_string(0, strlen(x == null ? "" : x), x)
-
 #define make_string(_capacity, _len, ptr) (string) { \
             .capacity = _capacity, \
             .len = _len, \
@@ -21,6 +19,9 @@ struct string {
         }
 
 #define null_string() make_string(0, 0, null)
+
+string
+str (char *x);
 
 string 
 string_create (char *c_str);
