@@ -80,7 +80,11 @@ int main() {
     App x = app(3000);
     debug(&x, true);
 
-    root(x, home);
+    within (x, "some_route") {
+        root(x, home);
+    }
+
+
     use(x, health);
 
     within (x, "api") {

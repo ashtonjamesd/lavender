@@ -62,7 +62,6 @@ find_route (AppPtr app, HttpType type, const char *path, bool *path_matched) {
 
     usize path_len = strlen(path);
 
-    // treat "/users/" the same as "/users"
     if (path_len > 1 and path[path_len - 1] == '/') {
         path_len -= 1;
     }
@@ -172,8 +171,12 @@ end_group (AppPtr app) {
 void
 register_route (AppPtr app, char *path, HttpType type, Controller controller) {
 
-    string url = null_string();
+    // you cannot create a root route inside of a group
+    if (strcmp(path, "/") == 0 && app->route_groups_count > 0) {
+        return;
+    }
 
+    string url = null_string();
     for (u32 i = 0; i < app->route_groups_count; i += 1) {
         char *group = app->route_groups[i];
 
@@ -185,6 +188,16 @@ register_route (AppPtr app, char *path, HttpType type, Controller controller) {
     }
 
     string_append(&url, str(path));
+
+    // exact route has already been registered
+    for (u32 i = 0; i < app->routes_count; i += 1) {
+        Route *existing = &app->routes[i];
+
+        if (existing->type == type and string_eq(existing->path, url)) {
+            string_destroy(&url);
+            return;
+        }
+    }
 
     Route route = {
         .controller = controller,

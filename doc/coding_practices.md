@@ -43,7 +43,13 @@ All files will include 'common.h' at the beginning.
 - The last field in a struct must be followed by two newlines.
 
 
-## 5 Other
+## 5 Testing
+
+- Generally, we want to maintain a high coverage across the framework
+- Use your own judgement for if something requires a test writing for it
+
+
+## 6 Other
 
 - The typedefs and macros inside of 'common.h' shall be preferred over standard C types, wherever possible.
 - The bang (!) operator should not be used for null checks; use explicit '== null' and '!= null'.
@@ -51,8 +57,14 @@ All files will include 'common.h' at the beginning.
 - Any function part of the user API must have a short comment explaining the usage.
 - Special exceptions to any of these will be considered case-by-case
 
-## 6 Coding Philosophies
+## 7 Coding Philosophies
 
 1. Have fun
 2. Prioritise user experience and brevity without sacrificing clarity when designing the framework API
 3. Every pull request must conclude with a kind message or fun joke
+
+
+## 8 AI...
+
+- 'AI slop' and whale-sized pull requests are not preferable
+- Disclose if you have used it
