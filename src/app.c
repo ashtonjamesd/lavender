@@ -233,5 +233,7 @@ register_inferred_route (AppPtr app, char *path, Controller controller) {
         type = HttpDelete;
     }
 
+    string_destroy(&str_path);
+
     register_route(app, path, type, controller);
 }

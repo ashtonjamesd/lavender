@@ -85,11 +85,7 @@ find_route (AppPtr app, HttpType type, const char *path, bool *path_matched);
 // runs the application
 #define run(x) app_run(&(x))
 // defined for consistency with passing around 'x' vs '&'
-
-// registers a route with a specific resource name
-#define at(app, name, controller) \
-    register_inferred_route(&(app), "/" name, controller);
-
+    
 // registers a controller to handle the root path
 #define root(x, controller) \
     register_route(&(x), "/", HttpGet, controller);

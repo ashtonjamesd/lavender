@@ -1,7 +1,7 @@
 #include "response.h"
 
 Response
-respond (HttpStatus status, char *body) {
+respond (HttpStatus status, const char *body) {
 
     return (Response) {
         .status = status,
@@ -10,343 +10,343 @@ respond (HttpStatus status, char *body) {
 }
 
 Response
-ok (char *body) {
+ok (const char *body) {
 
     return respond(HttpStatusOk, body);
 }
 
 Response
-created (char *body) {
+created (const char *body) {
 
     return respond(HttpStatusCreated, body);
 }
 
 Response
-accepted (char *body) {
+accepted (const char *body) {
 
     return respond(HttpStatusAccepted, body);
 }
 
 Response
-nonAuthoritativeInformation (char *body) {
+nonAuthoritativeInformation (const char *body) {
 
     return respond(HttpStatusNonAuthoritativeInformation, body);
 }
 
 Response
-noContent (char *body) {
+noContent (const char *body) {
 
     return respond(HttpStatusNoContent, body);
 }
 
 Response
-resetContent (char *body) {
+resetContent (const char *body) {
 
     return respond(HttpStatusResetContent, body);
 }
 
 Response
-partialContent (char *body) {
+partialContent (const char *body) {
 
     return respond(HttpStatusPartialContent, body);
 }
 
 Response
-multiStatus (char *body) {
+multiStatus (const char *body) {
 
     return respond(HttpStatusMultiStatus, body);
 }
 
 Response
-alreadyReported (char *body) {
+alreadyReported (const char *body) {
 
     return respond(HttpStatusAlreadyReported, body);
 }
 
 Response
-imUsed (char *body) {
+imUsed (const char *body) {
 
     return respond(HttpStatusImUsed, body);
 }
 
 Response
-multipleChoices (char *body) {
+multipleChoices (const char *body) {
 
     return respond(HttpStatusMultipleChoices, body);
 }
 
 Response
-movedPermanently (char *body) {
+movedPermanently (const char *body) {
 
     return respond(HttpStatusMovedPermanently, body);
 }
 
 Response
-found (char *body) {
+found (const char *body) {
 
     return respond(HttpStatusFound, body);
 }
 
 Response
-seeOther (char *body) {
+seeOther (const char *body) {
 
     return respond(HttpStatusSeeOther, body);
 }
 
 Response
-notModified (char *body) {
+notModified (const char *body) {
 
     return respond(HttpStatusNotModified, body);
 }
 
 Response
-temporaryRedirect (char *body) {
+temporaryRedirect (const char *body) {
 
     return respond(HttpStatusTemporaryRedirect, body);
 }
 
 Response
-permanentRedirect (char *body) {
+permanentRedirect (const char *body) {
 
     return respond(HttpStatusPermanentRedirect, body);
 }
 
 Response
-badRequest (char *body) {
+badRequest (const char *body) {
 
     return respond(HttpStatusBadRequest, body);
 }
 
 Response
-unauthorized (char *body) {
+unauthorized (const char *body) {
 
     return respond(HttpStatusUnauthorized, body);
 }
 
 Response
-paymentRequired (char *body) {
+paymentRequired (const char *body) {
 
     return respond(HttpStatusPaymentRequired, body);
 }
 
 Response
-forbidden (char *body) {
+forbidden (const char *body) {
 
     return respond(HttpStatusForbidden, body);
 }
 
 Response
-notFound (char *body) {
+notFound (const char *body) {
 
     return respond(HttpStatusNotFound, body);
 }
 
 Response
-methodNotAllowed (char *body) {
+methodNotAllowed (const char *body) {
 
     return respond(HttpStatusMethodNotAllowed, body);
 }
 
 Response
-notAcceptable (char *body) {
+notAcceptable (const char *body) {
 
     return respond(HttpStatusNotAcceptable, body);
 }
 
 Response
-proxyAuthenticationRequired (char *body) {
+proxyAuthenticationRequired (const char *body) {
 
     return respond(HttpStatusProxyAuthenticationRequired, body);
 }
 
 Response
-requestTimeout (char *body) {
+requestTimeout (const char *body) {
 
     return respond(HttpStatusRequestTimeout, body);
 }
 
 Response
-conflict (char *body) {
+conflict (const char *body) {
 
     return respond(HttpStatusConflict, body);
 }
 
 Response
-gone (char *body) {
+gone (const char *body) {
 
     return respond(HttpStatusGone, body);
 }
 
 Response
-lengthRequired (char *body) {
+lengthRequired (const char *body) {
 
     return respond(HttpStatusLengthRequired, body);
 }
 
 Response
-preconditionFailed (char *body) {
+preconditionFailed (const char *body) {
 
     return respond(HttpStatusPreconditionFailed, body);
 }
 
 Response
-contentTooLarge (char *body) {
+contentTooLarge (const char *body) {
 
     return respond(HttpStatusContentTooLarge, body);
 }
 
 Response
-uriTooLong (char *body) {
+uriTooLong (const char *body) {
 
     return respond(HttpStatusUriTooLong, body);
 }
 
 Response
-unsupportedMediaType (char *body) {
+unsupportedMediaType (const char *body) {
 
     return respond(HttpStatusUnsupportedMediaType, body);
 }
 
 Response
-rangeNotSatisfiable (char *body) {
+rangeNotSatisfiable (const char *body) {
 
     return respond(HttpStatusRangeNotSatisfiable, body);
 }
 
 Response
-expectationFailed (char *body) {
+expectationFailed (const char *body) {
 
     return respond(HttpStatusExpectationFailed, body);
 }
 
 Response
-imATeapot (char *body) {
+imATeapot (const char *body) {
 
     return respond(HttpStatusImATeapot, body);
 }
 
 Response
-misdirectedRequest (char *body) {
+misdirectedRequest (const char *body) {
 
     return respond(HttpStatusMisdirectedRequest, body);
 }
 
 Response
-unprocessableContent (char *body) {
+unprocessableContent (const char *body) {
 
     return respond(HttpStatusUnprocessableContent, body);
 }
 
 Response
-locked (char *body) {
+locked (const char *body) {
 
     return respond(HttpStatusLocked, body);
 }
 
 Response
-failedDependency (char *body) {
+failedDependency (const char *body) {
 
     return respond(HttpStatusFailedDependency, body);
 }
 
 Response
-tooEarly (char *body) {
+tooEarly (const char *body) {
 
     return respond(HttpStatusTooEarly, body);
 }
 
 Response
-upgradeRequired (char *body) {
+upgradeRequired (const char *body) {
 
     return respond(HttpStatusUpgradeRequired, body);
 }
 
 Response
-preconditionRequired (char *body) {
+preconditionRequired (const char *body) {
 
     return respond(HttpStatusPreconditionRequired, body);
 }
 
 Response
-tooManyRequests (char *body) {
+tooManyRequests (const char *body) {
 
     return respond(HttpStatusTooManyRequests, body);
 }
 
 Response
-requestHeaderFieldsTooLarge (char *body) {
+requestHeaderFieldsTooLarge (const char *body) {
 
     return respond(HttpStatusRequestHeaderFieldsTooLarge, body);
 }
 
 Response
-unavailableForLegalReasons (char *body) {
+unavailableForLegalReasons (const char *body) {
 
     return respond(HttpStatusUnavailableForLegalReasons, body);
 }
 
 Response
-internalServerError (char *body) {
+internalServerError (const char *body) {
 
     return respond(HttpStatusInternalServerError, body);
 }
 
 Response
-notImplemented (char *body) {
+notImplemented (const char *body) {
 
     return respond(HttpStatusNotImplemented, body);
 }
 
 Response
-badGateway (char *body) {
+badGateway (const char *body) {
 
     return respond(HttpStatusBadGateway, body);
 }
 
 Response
-serviceUnavailable (char *body) {
+serviceUnavailable (const char *body) {
 
     return respond(HttpStatusServiceUnavailable, body);
 }
 
 Response
-gatewayTimeout (char *body) {
+gatewayTimeout (const char *body) {
 
     return respond(HttpStatusGatewayTimeout, body);
 }
 
 Response
-httpVersionNotSupported (char *body) {
+httpVersionNotSupported (const char *body) {
 
     return respond(HttpStatusHttpVersionNotSupported, body);
 }
 
 Response
-variantAlsoNegotiates (char *body) {
+variantAlsoNegotiates (const char *body) {
 
     return respond(HttpStatusVariantAlsoNegotiates, body);
 }
 
 Response
-insufficientStorage (char *body) {
+insufficientStorage (const char *body) {
 
     return respond(HttpStatusInsufficientStorage, body);
 }
 
 Response
-loopDetected (char *body) {
+loopDetected (const char *body) {
 
     return respond(HttpStatusLoopDetected, body);
 }
 
 Response
-notExtended (char *body) {
+notExtended (const char *body) {
 
     return respond(HttpStatusNotExtended, body);
 }
 
 Response
-networkAuthenticationRequired (char *body) {
+networkAuthenticationRequired (const char *body) {
 
     return respond(HttpStatusNetworkAuthenticationRequired, body);
 }

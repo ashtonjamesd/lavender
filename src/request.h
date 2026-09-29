@@ -9,9 +9,6 @@
 // value of a request header
 #define header(name) request_header(request, name)
 
-// value of a path parameter
-#define param(name)  request_param(request, name)
-
 typedef enum HttpType HttpType;
 
 enum HttpType {

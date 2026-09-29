@@ -81,7 +81,7 @@ int main() {
     debug(&x, true);
 
     root(x, home);
-    at(x, "health", health);
+    route(x, "health", HttpGet, health);
 
     within (x, "api") {
         within (x, "v1") {

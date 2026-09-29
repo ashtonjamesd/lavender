@@ -80,186 +80,186 @@ typedef struct Response Response;
 
 struct Response {
     HttpStatus status;
-    char *body;
+    const char *body;
 
 };
 
 Response
-respond (HttpStatus status, char *body);
+respond (HttpStatus status, const char *body);
 
 // 2xx success
 Response
-ok (char *body);
+ok (const char *body);
 
 Response
-created (char *body);
+created (const char *body);
 
 Response
-accepted (char *body);
+accepted (const char *body);
 
 Response
-nonAuthoritativeInformation (char *body);
+nonAuthoritativeInformation (const char *body);
 
 Response
-noContent (char *body);
+noContent (const char *body);
 
 Response
-resetContent (char *body);
+resetContent (const char *body);
 
 Response
-partialContent (char *body);
+partialContent (const char *body);
 
 Response
-multiStatus (char *body);
+multiStatus (const char *body);
 
 Response
-alreadyReported (char *body);
+alreadyReported (const char *body);
 
 Response
-imUsed (char *body);
+imUsed (const char *body);
 
 // 3xx redirection
 Response
-multipleChoices (char *body);
+multipleChoices (const char *body);
 
 Response
-movedPermanently (char *body);
+movedPermanently (const char *body);
 
 Response
-found (char *body);
+found (const char *body);
 
 Response
-seeOther (char *body);
+seeOther (const char *body);
 
 Response
-notModified (char *body);
+notModified (const char *body);
 
 Response
-temporaryRedirect (char *body);
+temporaryRedirect (const char *body);
 
 Response
-permanentRedirect (char *body);
+permanentRedirect (const char *body);
 
 // 4xx client errors
 Response
-badRequest (char *body);
+badRequest (const char *body);
 
 Response
-unauthorized (char *body);
+unauthorized (const char *body);
 
 Response
-paymentRequired (char *body);
+paymentRequired (const char *body);
 
 Response
-forbidden (char *body);
+forbidden (const char *body);
 
 Response
-notFound (char *body);
+notFound (const char *body);
 
 Response
-methodNotAllowed (char *body);
+methodNotAllowed (const char *body);
 
 Response
-notAcceptable (char *body);
+notAcceptable (const char *body);
 
 Response
-proxyAuthenticationRequired (char *body);
+proxyAuthenticationRequired (const char *body);
 
 Response
-requestTimeout (char *body);
+requestTimeout (const char *body);
 
 Response
-conflict (char *body);
+conflict (const char *body);
 
 Response
-gone (char *body);
+gone (const char *body);
 
 Response
-lengthRequired (char *body);
+lengthRequired (const char *body);
 
 Response
-preconditionFailed (char *body);
+preconditionFailed (const char *body);
 
 Response
-contentTooLarge (char *body);
+contentTooLarge (const char *body);
 
 Response
-uriTooLong (char *body);
+uriTooLong (const char *body);
 
 Response
-unsupportedMediaType (char *body);
+unsupportedMediaType (const char *body);
 
 Response
-rangeNotSatisfiable (char *body);
+rangeNotSatisfiable (const char *body);
 
 Response
-expectationFailed (char *body);
+expectationFailed (const char *body);
 
 Response
-imATeapot (char *body);
+imATeapot (const char *body);
 
 Response
-misdirectedRequest (char *body);
+misdirectedRequest (const char *body);
 
 Response
-unprocessableContent (char *body);
+unprocessableContent (const char *body);
 
 Response
-locked (char *body);
+locked (const char *body);
 
 Response
-failedDependency (char *body);
+failedDependency (const char *body);
 
 Response
-tooEarly (char *body);
+tooEarly (const char *body);
 
 Response
-upgradeRequired (char *body);
+upgradeRequired (const char *body);
 
 Response
-preconditionRequired (char *body);
+preconditionRequired (const char *body);
 
 Response
-tooManyRequests (char *body);
+tooManyRequests (const char *body);
 
 Response
-requestHeaderFieldsTooLarge (char *body);
+requestHeaderFieldsTooLarge (const char *body);
 
 Response
-unavailableForLegalReasons (char *body);
+unavailableForLegalReasons (const char *body);
 
 // 5xx server errors
 Response
-internalServerError (char *body);
+internalServerError (const char *body);
 
 Response
-notImplemented (char *body);
+notImplemented (const char *body);
 
 Response
-badGateway (char *body);
+badGateway (const char *body);
 
 Response
-serviceUnavailable (char *body);
+serviceUnavailable (const char *body);
 
 Response
-gatewayTimeout (char *body);
+gatewayTimeout (const char *body);
 
 Response
-httpVersionNotSupported (char *body);
+httpVersionNotSupported (const char *body);
 
 Response
-variantAlsoNegotiates (char *body);
+variantAlsoNegotiates (const char *body);
 
 Response
-insufficientStorage (char *body);
+insufficientStorage (const char *body);
 
 Response
-loopDetected (char *body);
+loopDetected (const char *body);
 
 Response
-notExtended (char *body);
+notExtended (const char *body);
 
 Response
-networkAuthenticationRequired (char *body);
+networkAuthenticationRequired (const char *body);
 
 #endif

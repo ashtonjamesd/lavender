@@ -91,7 +91,7 @@ int main() {
         within (x, "v1") {
             resource(x, todo);
 
-            at(x, "options", todo_options)
+            route(x, "options", HttpOptions, todo_options);
 
             use(x, get_stats);
             put(x, replace_todo);

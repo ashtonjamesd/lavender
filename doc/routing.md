@@ -44,15 +44,7 @@ Since this route starts with 'get', a GET route will be registered.
 
 Names that start with anything else are registered as GET.
 
-Sometimes, you would prefer to name the route yourself, in which case you can use the following.
-
-```c
-at(app, "user_list", get_users);
-```
-
-This registers the controller under '/user_list'. Leave out the leading '/', as it is added for you.
-
-The HTTP method for the route will be inferred.
+To choose the path yourself, see [Registering Routes Manually](#registering-routes-manually).
 
 <br/>
 
@@ -73,10 +65,10 @@ Register it outside of any group.
 To avoid code like the following.
 
 ```c
-at(app, "users/get_users", get_users);
-at(app, "users/create_user", create_user);
-at(app, "users/update_user", update_user);
-at(app, "users/delete_user", delete_user);
+route(app, "users/get_users", HttpGet, get_users);
+route(app, "users/create_user", HttpPost, create_user);
+route(app, "users/update_user", HttpPatch, update_user);
+route(app, "users/delete_user", HttpDelete, delete_user);
 ```
 
 You can group routes with a common path.
@@ -150,7 +142,7 @@ route(app, "login", HttpPost, handle_login);
 ```
 
 
-Like 'at', the leading '/' is added for you, so the path must be a string literal. 
+The leading '/' is added for you, so the path must be a string literal.
 
 <br/>
 

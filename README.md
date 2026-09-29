@@ -56,7 +56,7 @@ make examples   # build the examples
 Contributions are welcome. Before opening a pull request:
 
 - Follow the [coding standards](doc/coding_standards.md).
-- Make sure `make test` is passing.
+- Ensure all tests are passing.
 
 ## License
 

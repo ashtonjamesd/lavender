@@ -126,18 +126,6 @@ should ("register a custom path and method with route") {
     expect(found->controller == some_get_route);
 }
 
-should ("register a controller under a custom name with at") {
-    App x = app(1234);
-
-    at(x, "things", some_get_route);
-
-    bool path_matched;
-    Route *route = find_route(&x, HttpGet, "/things", &path_matched);
-
-    expect_not_null(route);
-    expect(route->controller == some_get_route);
-}
-
 should ("register the root path") {
     App x = app(1234);
 
@@ -304,17 +292,6 @@ should ("nest more groups than the initial capacity") {
 
     bool path_matched;
     expect_not_null(find_route(&x, HttpGet, "/a/b/c/d/e/f/some_get_route", &path_matched));
-}
-
-should ("apply groups to at") {
-    App x = app(1234);
-
-    within (x, "api") {
-        at(x, "things", some_get_route);
-    }
-
-    bool path_matched;
-    expect_not_null(find_route(&x, HttpGet, "/api/things", &path_matched));
 }
 
 should ("apply groups to resource") {
