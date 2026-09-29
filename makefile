@@ -13,4 +13,8 @@ test:
 	$(CC) test/str_test.c $(filter-out src/main.c, $(SRCS)) -Isrc $(CFLAGS) -Wno-unused-function -fsanitize=address -g $(LDLIBS) -o build/str_test
 	./build/str_test
 
-.PHONY: all test
+examples:
+	mkdir -p build/example
+	for f in example/*.c; do $(CC) $$f $(filter-out src/main.c, $(SRCS)) -Isrc $(CFLAGS) $(LDLIBS) -o build/example/$$(basename $$f .c) || exit 1; done
+
+.PHONY: all test examples

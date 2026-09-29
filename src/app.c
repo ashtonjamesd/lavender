@@ -107,7 +107,7 @@ dispatch (ptr context, Request request) {
 }
 
 void
-run (AppPtr app) {
+app_run (AppPtr app) {
 
     if (app->debug) {
         printf("\n");
@@ -128,7 +128,7 @@ run (AppPtr app) {
     sigaddset(&shutdown_signals, SIGTERM);
     pthread_sigmask(SIG_BLOCK, &shutdown_signals, null);
 
-    ptr handle = app->server->start(app->port, dispatch, app);
+    ptr handle = app->server->server_start(app->port, dispatch, app);
 
     if (handle == null) {
         panic(
@@ -145,7 +145,7 @@ run (AppPtr app) {
 
     printf("\nreceived %s, shutting down\n", received == SIGINT ? "SIGINT" : "SIGTERM");
 
-    app->server->stop(handle);
+    app->server->server_stop(handle);
     cleanup_app(app);
 }
 
@@ -201,4 +201,24 @@ register_route (AppPtr app, char *path, HttpType type, Controller controller) {
 
     app->routes[app->routes_count] = route;
     app->routes_count += 1;
+}
+
+void
+register_inferred_route (AppPtr app, char *path, Controller controller) {
+    
+    string str_path = string_create(path + 1);
+    // '+ 1' skips the leading '/'
+
+    HttpType type = HttpGet;
+    if (string_starts_with(str_path, str("get"))) {
+        type = HttpGet;
+    } else if (string_starts_with(str_path, str("create"))) {
+        type = HttpPost;
+    } else if (string_starts_with(str_path, str("update"))) {
+        type = HttpPatch;
+    } else if (string_starts_with(str_path, str("delete"))) {
+        type = HttpDelete;
+    }
+
+    register_route(app, path, type, controller);
 }

@@ -3,6 +3,15 @@
 
 #include "common.h"
 
+// value of a query string parameter
+#define query(name)  request_query(request, name)
+
+// value of a request header
+#define header(name) request_header(request, name)
+
+// value of a path parameter
+#define param(name)  request_param(request, name)
+
 typedef enum HttpType HttpType;
 
 enum HttpType {

@@ -31,4 +31,10 @@ string_destroy (stringPtr s_ptr);
 void
 string_append (stringPtr s_ptr, string s_ptr2);
 
+bool
+string_eq (string s1, string s2);
+
+bool 
+string_starts_with (string s1, string s2);
+
 #endif

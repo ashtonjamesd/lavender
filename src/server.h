@@ -17,14 +17,14 @@ struct Server {
     const char *name;
 
     // starts serving on a port
-    ptr (*start)(u16 port, RequestHandler handler, ptr context);
+    ptr (*server_start)(u16 port, RequestHandler handler, ptr context);
 
     // stops accepting new connections
-    void (*stop)(ptr handle);
+    void (*server_stop)(ptr handle);
 
     // return a header or query parameter value from a request connection, or null
-    const char *(*header)(ptr connection, const char *name);
-    const char *(*query)(ptr connection, const char *name);
+    const char *(*server_header)(ptr connection, const char *name);
+    const char *(*server_query)(ptr connection, const char *name);
 
 };
 

@@ -9,7 +9,7 @@ request_header (Request request, const char *name) {
         return null;
     }
 
-    return request._server->header(request._connection, name);
+    return request._server->server_header(request._connection, name);
 }
 
 const char *
@@ -19,5 +19,5 @@ request_query (Request request, const char *name) {
         return null;
     }
 
-    return request._server->query(request._connection, name);
+    return request._server->server_query(request._connection, name);
 }

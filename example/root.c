@@ -6,9 +6,7 @@ approute (home) {
 
 int main() {
     App x = app(3000);
-
-    within (x, "api/v1")
-        get(x, home);
+    root(x, home);
 
     run(x);
 

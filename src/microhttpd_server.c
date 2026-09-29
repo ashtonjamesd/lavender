@@ -8,23 +8,23 @@
 
 
 static ptr
-start (u16 port, RequestHandler handler, ptr context);
+microhttpd_start (u16 port, RequestHandler handler, ptr context);
 
 static void
-stop (ptr handle);
+microhttpd_stop (ptr handle);
 
 static const char *
-header (ptr connection, const char *name);
+microhttpd_header (ptr connection, const char *name);
 
 static const char *
-query (ptr connection, const char *name);
+microhttpd_query (ptr connection, const char *name);
 
 const Server microhttpd_server = {
     .name = "libmicrohttpd",
-    .start = start,
-    .stop = stop,
-    .header = header,
-    .query = query,
+    .server_start = microhttpd_start,
+    .server_stop = microhttpd_stop,
+    .server_header = microhttpd_header,
+    .server_query = microhttpd_query,
 };
 
 typedef struct MicrohttpdServer MicrohttpdServer, *MicrohttpdServerPtr;
@@ -193,7 +193,7 @@ request_completed (
 }
 
 static ptr
-start (u16 port, RequestHandler handler, ptr context) {
+microhttpd_start (u16 port, RequestHandler handler, ptr context) {
 
     // writing to a socket the client already closed must not kill the process
     signal(SIGPIPE, SIG_IGN);
@@ -228,7 +228,7 @@ start (u16 port, RequestHandler handler, ptr context) {
 }
 
 static void
-stop (ptr handle) {
+microhttpd_stop (ptr handle) {
 
     MicrohttpdServerPtr server = handle;
 
@@ -237,13 +237,13 @@ stop (ptr handle) {
 }
 
 static const char *
-header (ptr connection, const char *name) {
+microhttpd_header (ptr connection, const char *name) {
 
     return MHD_lookup_connection_value(connection, MHD_HEADER_KIND, name);
 }
 
 static const char *
-query (ptr connection, const char *name) {
+microhttpd_query (ptr connection, const char *name) {
 
     return MHD_lookup_connection_value(connection, MHD_GET_ARGUMENT_KIND, name);
 }

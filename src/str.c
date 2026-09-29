@@ -57,3 +57,31 @@ string_append (stringPtr s_ptr, string s_ptr2) {
 
     *s_ptr = make_string(total_len, total_len, bytes);
 }
+
+bool
+string_eq (string s1, string s2) {
+    if (s1.len != s2.len) {
+        return false;
+    }
+
+    for (u32 i = 0; i < s1.len; i++ ) {
+        if (s1._ptr[i] != s2._ptr[i]) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool 
+string_starts_with (string s1, string s2) {
+    if (s2.len > s1.len) return false;
+
+    for (u32 i = 0; i < s2.len; i++ ) {
+        if (s1._ptr[i] != s2._ptr[i]) {
+            return false;
+        }
+    }
+
+    return true;
+}

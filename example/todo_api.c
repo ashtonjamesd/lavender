@@ -81,24 +81,20 @@ int main() {
     debug(&x, true);
 
     root(x, home);
-    use(x, health);
+    at(x, "health", health);
 
     within (x, "api") {
         within (x, "v1") {
             resource(x, todo);
 
-            at(x, "options", todo_options)
+            route(x, "todo", HttpOptions, todo_options);
 
             use(x, get_stats);
             put(x, replace_todo);
 
             within (x, "auth") {
-                post(x, login);
+                route(x, "login", HttpPost, login);
             }
-        }
-
-        within (x, "v2") {
-            use(x, get_stats);
         }
     }
 
