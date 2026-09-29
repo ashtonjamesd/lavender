@@ -1,6 +1,7 @@
 #include "app.h"
 
 #include <signal.h>
+#include <time.h>
 
 #define initial_route_capacity 8
 #define initial_route_groups_capacity 4
@@ -14,6 +15,7 @@ app (u16 port) {
         sizeof(char *) * initial_route_groups_capacity;
 
     return (App) {
+        .host = "127.0.0.1",
         .port = port,
         .debug = false,
         .server = &microhttpd_server,
@@ -29,6 +31,11 @@ app (u16 port) {
 void 
 debug (AppPtr app, bool debug) {
     app->debug = debug;
+}
+
+void
+host (AppPtr app, const char *host) {
+    app->host = host;
 }
 
 void
@@ -91,18 +98,32 @@ dispatch (ptr context, Request request) {
 
     AppPtr app = context;
 
+    struct timespec start;
+    clock_gettime(CLOCK_MONOTONIC, &start);
+
+    Response response;
     bool path_matched;
     Route *route = find_route(app, request.method, request.path, &path_matched);
 
     if (route == null and path_matched) {
-        return methodNotAllowed("method not allowed");
+        response = methodNotAllowed("method not allowed");
+    } else if (route == null) {
+        response = notFound("not found");
+    } else {
+        response = route->controller(request);
     }
 
-    if (route == null) {
-        return notFound("not found");
+    if (app->debug) {
+        struct timespec end;
+        clock_gettime(CLOCK_MONOTONIC, &end);
+
+        double ms = (end.tv_sec - start.tv_sec) * 1000.0 + (end.tv_nsec - start.tv_nsec) / 1000000.0;
+
+        printf("%-7s %s %d %.2fms\n", method_name(request.method), request.path, response.status, ms);
+        fflush(stdout);
     }
 
-    return route->controller(request);
+    return response;
 }
 
 void
@@ -127,16 +148,16 @@ app_run (AppPtr app) {
     sigaddset(&shutdown_signals, SIGTERM);
     pthread_sigmask(SIG_BLOCK, &shutdown_signals, null);
 
-    ptr handle = app->server->server_start(app->port, dispatch, app);
+    ptr handle = app->server->server_start(app->host, app->port, dispatch, app);
 
     if (handle == null) {
         panic(
-            "%s failed to start on port %u, is it already in use?",
-            app->server->name, (unsigned int)app->port
+            "%s failed to start on %s:%u, is the port in use or the address invalid?",
+            app->server->name, app->host, (unsigned int)app->port
         );
     }
 
-    printf("listening on http://localhost:%u using %s\n", (unsigned int)app->port, app->server->name);
+    printf("listening on http://%s:%u using %s\n\n", app->host, (unsigned int)app->port, app->server->name);
     fflush(stdout);
 
     int received;

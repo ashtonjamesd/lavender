@@ -5,6 +5,9 @@
 
 typedef enum HttpStatus HttpStatus;
 
+#define text_plain "text/plain"
+#define application_json "application/json"
+
 enum HttpStatus {
     // 2xx success
     HttpStatusOk = 200,
@@ -82,7 +85,17 @@ struct Response {
     HttpStatus status;
     const char *body;
 
+    // null means text/plain
+    const char *content_type;
+
 };
+
+// sets the content type of a response
+Response
+with_content_type (Response response, const char *content_type);
+
+// marks a response as json, e.g. json(ok("{\"id\": 1}"))
+#define json(response) with_content_type(response, application_json)
 
 Response
 respond (HttpStatus status, const char *body);

@@ -6,7 +6,15 @@ respond (HttpStatus status, const char *body) {
     return (Response) {
         .status = status,
         .body = body,
+        .content_type = null,
     };
+}
+
+Response
+with_content_type (Response response, const char *content_type) {
+
+    response.content_type = content_type;
+    return response;
 }
 
 Response

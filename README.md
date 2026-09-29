@@ -49,13 +49,13 @@ make examples   # build the examples
 ## Documentation
 
 - [Routing](doc/routing.md)
-- [Coding Standards](doc/coding_standards.md)
+- [Coding Standards](doc/coding_practices.md)
 
 ## Contributing
 
 Contributions are welcome. Before opening a pull request:
 
-- Follow the [coding standards](doc/coding_standards.md).
+- Follow the [coding standards](doc/coding_practices.md).
 - Ensure all tests are passing.
 
 ## License

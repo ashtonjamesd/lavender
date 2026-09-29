@@ -10,6 +10,7 @@
 typedef struct App App, *AppPtr;
 
 struct App {
+    const char *host;
     u16 port;
     bool debug;
 
@@ -32,9 +33,13 @@ app (u16 port);
 void 
 app_run (AppPtr);
 
-// sets a debug flag for the application
-void 
+// sets a debug flag for the application, which also logs every request
+void
 debug (AppPtr, bool debug);
+
+// sets the address to listen on, "127.0.0.1" by default. "0.0.0.0" allows other devices
+void
+host (AppPtr, const char *host);
 
 void
 start_group (AppPtr, char *name);

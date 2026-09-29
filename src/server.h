@@ -16,8 +16,8 @@ typedef struct Server Server, *ServerPtr;
 struct Server {
     const char *name;
 
-    // starts serving on a port
-    ptr (*server_start)(u16 port, RequestHandler handler, ptr context);
+    // starts serving on an ipv4 address and port
+    ptr (*server_start)(const char *host, u16 port, RequestHandler handler, ptr context);
 
     // stops accepting new connections
     void (*server_stop)(ptr handle);

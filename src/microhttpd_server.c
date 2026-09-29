@@ -4,11 +4,13 @@
 
 #include <signal.h>
 #include <unistd.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
 #include <microhttpd.h>
 
 
 static ptr
-microhttpd_start (u16 port, RequestHandler handler, ptr context);
+microhttpd_start (const char *host, u16 port, RequestHandler handler, ptr context);
 
 static void
 microhttpd_stop (ptr handle);
@@ -49,8 +51,6 @@ struct RequestContext {
 #define max_body_size 8 * MB
 #define connection_timeout_seconds 30
 
-#define text_plain "text/plain"
-
 static bool
 parse_method (const char *method, HttpType *type) {
 
@@ -85,10 +85,11 @@ send_response (struct MHD_Connection *connection, Response response) {
         return MHD_NO;
     }
 
-    // currently just defaults to text/plain, for now
-    MHD_add_response_header(
-        mhd_response, MHD_HTTP_HEADER_CONTENT_TYPE, (text_plain "; charset=utf-8")
-    );
+    const char *content_type = response.content_type == null
+        ? text_plain "; charset=utf-8"
+        : response.content_type;
+
+    MHD_add_response_header(mhd_response, MHD_HTTP_HEADER_CONTENT_TYPE, content_type);
 
     enum MHD_Result result = MHD_queue_response(connection, response.status, mhd_response);
     MHD_destroy_response(mhd_response);
@@ -117,6 +118,16 @@ handle_request (
 
     // called for headers only
     if (context == null) {
+
+        // reject an oversized body before reading any of it
+        const char *length = MHD_lookup_connection_value(
+            connection, MHD_HEADER_KIND, MHD_HTTP_HEADER_CONTENT_LENGTH
+        );
+
+        if (length != null and strtoull(length, null, 10) > max_body_size) {
+            return send_response(connection, contentTooLarge("request body too large"));
+        }
+
         context = alloc(RequestContext);
         *context = (RequestContext) {
             .body = null_string(),
@@ -193,7 +204,20 @@ request_completed (
 }
 
 static ptr
-microhttpd_start (u16 port, RequestHandler handler, ptr context) {
+microhttpd_start (const char *host, u16 port, RequestHandler handler, ptr context) {
+
+    struct sockaddr_in address = {
+        .sin_family = AF_INET,
+        .sin_port = htons(port),
+    };
+
+    if (strcmp(host, "localhost") == 0) {
+        host = "127.0.0.1";
+    }
+
+    if (inet_pton(AF_INET, host, &address.sin_addr) != 1) {
+        return null;
+    }
 
     // writing to a socket the client already closed must not kill the process
     signal(SIGPIPE, SIG_IGN);
@@ -213,6 +237,7 @@ microhttpd_start (u16 port, RequestHandler handler, ptr context) {
         port,
         null, null,
         handle_request, server,
+        MHD_OPTION_SOCK_ADDR, (struct sockaddr *)&address,
         MHD_OPTION_THREAD_POOL_SIZE, thread_count,
         MHD_OPTION_CONNECTION_TIMEOUT, (unsigned int)connection_timeout_seconds,
         MHD_OPTION_NOTIFY_COMPLETED, request_completed, null,
