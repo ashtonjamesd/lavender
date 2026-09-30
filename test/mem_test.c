@@ -168,6 +168,8 @@ should ("stay aligned after resizing") {
 }
 
 
+#ifndef MEM_NO_TRACK_LEAKS
+
 describe ("live counts")
 
 should ("count each allocation and its bytes") {
@@ -283,6 +285,9 @@ should ("keep correct counts across threads") {
     expect_eq(mem_live_count(), count);
     expect_eq(mem_live_bytes(), bytes);
 }
+
+
+#endif
 
 int
 main (void) {

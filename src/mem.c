@@ -1,5 +1,7 @@
 #include "mem.h"
 
+#ifndef MEM_NO_TRACK_LEAKS
+
 static usize live_allocation_count = 0;
 static usize live_bytes_allocated = 0;
 
@@ -8,6 +10,9 @@ static pthread_mutex_t memory_lock = PTHREAD_MUTEX_INITIALIZER;
 static AllocHeaderPtr live_allocations = null;
 
 static pthread_once_t mem_initialised = PTHREAD_ONCE_INIT;
+
+#define head_guard_value 0xA110CA7EDA110CA7ull
+#define freed_guard_value 0xF4EEDF4EEDF4EED0ull
 
 static void
 mem_setup (void) {
@@ -85,9 +90,9 @@ header_bytes (void) {
 }
 
 static inline AllocHeaderPtr
-alloc_header_from_object (void *ptr) {
+alloc_header_from_object (ptr x) {
 
-    return (AllocHeaderPtr) ((bytePtr)ptr - header_bytes());
+    return (AllocHeaderPtr) ((bytePtr)x - header_bytes());
 }
 
 static void 
@@ -117,7 +122,7 @@ untrack_allocation (AllocHeaderPtr allocation) {
     }
 }
 
-void *
+ptr
 alloc_function (usize size, const char *file, u32 line) {
 
     mem_init();
@@ -147,23 +152,22 @@ alloc_function (usize size, const char *file, u32 line) {
         live_bytes_allocated += size;
     }
 
-    void *object_ptr = (bytePtr)allocation + header_size;
-    return object_ptr;
+    return (ptr)((bytePtr)allocation + header_size);
 }
 
-void *
-resize_function (void *ptr, usize new_size, const char *file, u32 line) {
+ptr
+resize_function (ptr x, usize new_size, const char *file, u32 line) {
 
-    if (ptr == null) {
+    if (x == null) {
         return alloc_function(new_size, file, line);
     }
 
     if (new_size == 0) {
-        free_function(ptr, file, line);
+        free_function(x, file, line);
         return null;
     }
 
-    AllocHeaderPtr allocation = alloc_header_from_object(ptr);
+    AllocHeaderPtr allocation = alloc_header_from_object(x);
 
     with_mutex (&memory_lock) {
 
@@ -186,20 +190,20 @@ resize_function (void *ptr, usize new_size, const char *file, u32 line) {
 
     resized->size = new_size;
 
-    return (bytePtr)resized + header_bytes();
+    return (ptr)((bytePtr)resized + header_bytes());
 }
 
 void
-free_function (void *ptr, const char *file, u32 line) {
+free_function (ptr x, const char *file, u32 line) {
     
     (void)file;
     (void)line;
 
-    if (ptr == null) {
+    if (x == null) {
         return;
     }
 
-    AllocHeaderPtr allocation = alloc_header_from_object(ptr);
+    AllocHeaderPtr allocation = alloc_header_from_object(x);
     allocation->isFreed = true;
 
     with_mutex (&memory_lock) {
@@ -212,3 +216,65 @@ free_function (void *ptr, const char *file, u32 line) {
 
     free(allocation);
 }
+
+#else
+
+void
+mem_init (void) {
+}
+
+void
+mem_report (void) {
+}
+
+usize
+mem_live_count (void) {
+
+    return 0;
+}
+
+usize
+mem_live_bytes (void) {
+
+    return 0;
+}
+
+ptr 
+alloc_function (usize size, const char *file, u32 line) {
+
+    ptr bytes = malloc(size);
+
+    if (bytes == null) {
+        panic("%s:%u failed to allocate %zu bytes", file, line, size);
+    }
+
+    return bytes;
+}
+
+ptr 
+resize_function (ptr ptr, usize new_size, const char *file, u32 line) {
+
+    if (new_size == 0) {
+        free_function(ptr, file, line);
+        return null;
+    }
+
+    ptr bytes = realloc(ptr, new_size);
+
+    if (bytes == null) {
+        panic("%s:%u failed to resize allocation to %zu bytes", file, line, new_size);
+    }
+
+    return bytes;
+}
+
+void
+free_function (ptr ptr, const char *file, u32 line) {
+
+    (void)file;
+    (void)line;
+
+    free(ptr);
+}
+
+#endif
