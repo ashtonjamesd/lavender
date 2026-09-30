@@ -20,7 +20,7 @@ mem_setup (void) {
     atexit(mem_report);
 }
 
-void
+static void
 mem_init (void) {
 
     pthread_once(&mem_initialised, mem_setup);
@@ -168,10 +168,6 @@ alloc_function (usize size, const char *file, u32 line) {
     
     const usize total_size = header_size + tail_size;
 
-    if (header_size % alignment != 0) {
-        panic("alignment fault");
-    }
-
     AllocHeaderPtr allocation = (AllocHeaderPtr) malloc(total_size);
     if (allocation == null) {
         panic("%s:%u failed to allocate %zu bytes", file, line, size);
@@ -274,7 +270,7 @@ free_function (ptr x, const char *file, u32 line) {
 
 #else
 
-void
+static void
 mem_init (void) {
 }
 

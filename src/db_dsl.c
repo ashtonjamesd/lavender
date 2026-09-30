@@ -2,7 +2,7 @@
 
 #include "str.h"
 
-bool
+static bool
 create_db_table (char *name, DbColumn *columns, usize count) {
 
     string sql = null_string();

@@ -56,7 +56,7 @@ host (AppPtr app, const char *host) {
     app->host = host;
 }
 
-void
+static void
 cleanup_app (AppPtr app) {
 
     foreach (i, app->routes_count) {
