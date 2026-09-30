@@ -90,4 +90,8 @@ Contributions are welcome. Before opening a pull request:
 
 ## License
 
-[SQLite Blessing](LICENSE)
+[MIT](LICENSE)
+
+> May you do good and not evil.<br/>
+> May you find forgiveness for yourself and forgive others.<br/>
+> May you share freely, never taking more than you give.
