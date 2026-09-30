@@ -6,7 +6,7 @@
 typedef struct string string, *stringPtr;
 
 struct string {
-    byte *_ptr;
+    char *_ptr;
     
     u32 len;
     u32 capacity;

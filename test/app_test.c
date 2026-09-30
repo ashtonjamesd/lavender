@@ -122,7 +122,7 @@ should ("grow past its initial group capacity") {
     App x = app(1234);
     u32 capacity = x.route_groups_capacity;
 
-    for (u32 i = 0; i < capacity + 3; i += 1) {
+    foreach (i, capacity + 3) {
         start_group(&x, "g");
     }
 

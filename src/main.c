@@ -148,7 +148,6 @@ build_database (void) {
 
 int main(void) {
     
-
     if (!db_open("users.db")) {
         panic("could not open database: %s", db_error());
     }

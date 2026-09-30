@@ -145,7 +145,7 @@ handle_request (
         }
 
         if (!context->body_too_large) {
-            string chunk = make_string(0, *upload_data_size, (bytePtr)upload_data);
+            string chunk = make_string(0, *upload_data_size, (char *)upload_data);
             string_append(&context->body, chunk);
         }
 
@@ -165,7 +165,7 @@ handle_request (
     // null-terminate the body so controllers can treat it as a c string
     // we do this because users would otherwise be forced to use our strings API
     usize body_len = context->body.len;
-    string_append(&context->body, make_string(0, 1, (bytePtr)""));
+    string_append(&context->body, make_string(0, 1, ""));
 
     Request request = {
         .method = type,

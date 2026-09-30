@@ -34,6 +34,9 @@ typedef void *    ptr;
 // used to annotate when a pointer field is intended to be used as a list.
 #define List(x) x*
 
+#define foreach(i, n) \
+    for (u32 i = 0; i < (n); i += 1)
+
 #define unused(x) (void)(x)
 #define str_eq(a, b) (strcmp(a, b) == 0)
 

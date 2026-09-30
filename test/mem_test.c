@@ -20,7 +20,7 @@ it ("returns memory that can be written and read") {
     byte *bytes = alloc_bytes(64);
     expect_not_null(bytes);
 
-    for (u32 i = 0; i < 64; i += 1) {
+    foreach (i, 64) {
         bytes[i] = (byte)i;
     }
 
@@ -145,7 +145,7 @@ should ("return 16-byte aligned memory for any size") {
 
     usize sizes[] = { 1, 3, 8, 15, 16, 17, 100, 4096 };
 
-    for (u32 i = 0; i < sizeof(sizes) / sizeof(sizes[0]); i += 1) {
+    foreach (i, sizeof(sizes) / sizeof(sizes[0])) {
         byte *bytes = alloc_bytes(sizes[i]);
 
         expect((uintptr_t)bytes % 16 == 0);
@@ -258,7 +258,7 @@ allocate_and_free (void *n) {
 
     unused(n);
 
-    for (u32 i = 0; i < 1000; i += 1) {
+    foreach (i, 1000) {
         byte *a = alloc_bytes(16);
         a = resize(a, 32);
         dealloc(a);
@@ -274,11 +274,11 @@ should ("keep correct counts across threads") {
 
     pthread_t threads[8];
 
-    for (u32 i = 0; i < 8; i += 1) {
+    foreach (i, 8) {
         pthread_create(&threads[i], null, allocate_and_free, null);
     }
 
-    for (u32 i = 0; i < 8; i += 1) {
+    foreach (i, 8) {
         pthread_join(threads[i], null);
     }
 
@@ -293,7 +293,7 @@ should ("be intact when every byte of the object is used") {
 
     usize sizes[] = { 1, 5, 8, 13, 16, 100 };
 
-    for (u32 i = 0; i < sizeof(sizes) / sizeof(sizes[0]); i += 1) {
+    foreach (i, sizeof(sizes) / sizeof(sizes[0])) {
         byte *bytes = alloc_bytes(sizes[i]);
         memset(bytes, 'x', sizes[i]);
 

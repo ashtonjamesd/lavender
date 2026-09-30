@@ -21,14 +21,12 @@ string_create (char *c_str) {
 
     usize len = c_str == null ? 0 : strlen(c_str);
 
-    // an empty string owns nothing. allocating here would give a capacity of 0,
-    // which string_destroy treats as borrowed, so the allocation would leak
     if (len == 0) {
         return null_string();
     }
 
     usize capacity = len;
-    byte *bytes = alloc_bytes(len);
+    char *bytes = alloc_bytes(len);
 
     string s = make_string(capacity, len, bytes);
     memcpy(s._ptr, c_str, len);
@@ -58,7 +56,7 @@ string_append (stringPtr s_ptr, string s_ptr2) {
 
     u32 total_len = s_ptr->len + s_ptr2.len;
 
-    byte *bytes = alloc_bytes(total_len);
+    char *bytes = alloc_bytes(total_len);
 
     if (s_ptr->len != 0) {
         memcpy(bytes, s_ptr->_ptr, s_ptr->len);
@@ -77,7 +75,7 @@ string_eq (string s1, string s2) {
         return false;
     }
 
-    for (u32 i = 0; i < s1.len; i++ ) {
+    foreach (i, s1.len) {
         if (s1._ptr[i] != s2._ptr[i]) {
             return false;
         }
@@ -90,7 +88,7 @@ bool
 string_starts_with (string s1, string s2) {
     if (s2.len > s1.len) return false;
 
-    for (u32 i = 0; i < s2.len; i++ ) {
+    foreach (i, s2.len) {
         if (s1._ptr[i] != s2._ptr[i]) {
             return false;
         }

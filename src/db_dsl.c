@@ -34,7 +34,7 @@ create_db_table (char *name, DbColumn *columns, usize count) {
     }
 
     string_append(&sql, str(")"));
-    string_append(&sql, make_string(0, 1, (bytePtr)""));
+    string_append(&sql, make_string(0, 1, ""));
 
     bool created = db_exec(sql._ptr);
     string_destroy(&sql);

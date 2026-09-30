@@ -301,13 +301,13 @@ should ("nest more groups than the initial capacity") {
     App x = app(1234);
     char *names[6] = { "a", "b", "c", "d", "e", "f" };
 
-    for (u32 i = 0; i < 6; i += 1) {
+    foreach (i, 6) {
         start_group(&x, names[i]);
     }
 
     get(x, some_get_route);
 
-    for (u32 i = 0; i < 6; i += 1) {
+    foreach (i, 6) {
         end_group(&x);
     }
 
@@ -338,7 +338,7 @@ should ("keep every route when registering more than the initial capacity") {
     App x = app(1234);
     char path[32];
 
-    for (u32 i = 0; i < 20; i += 1) {
+    foreach (i, 20) {
         snprintf(path, sizeof(path), "/route_%u", i);
         register_route(&x, path, HttpGet, some_get_route);
     }
@@ -347,7 +347,7 @@ should ("keep every route when registering more than the initial capacity") {
 
     bool path_matched;
 
-    for (u32 i = 0; i < 20; i += 1) {
+    foreach (i, 20) {
         snprintf(path, sizeof(path), "/route_%u", i);
         expect_not_null(find_route(&x, HttpGet, path, &path_matched));
     }

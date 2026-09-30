@@ -59,7 +59,7 @@ host (AppPtr app, const char *host) {
 void
 cleanup_app (AppPtr app) {
 
-    for (u32 i = 0; i < app->routes_count; i += 1) {
+    foreach (i, app->routes_count) {
         string_destroy(&app->routes[i].path);
     }
 
@@ -95,7 +95,7 @@ find_route (AppPtr app, HttpType type, const char *path, bool *path_matched) {
 
     *path_matched = false;
 
-    for (u32 i = 0; i < app->routes_count; i += 1) {
+    foreach (i, app->routes_count) {
         Route *route = &app->routes[i];
 
         if (route->path.len != path_len or memcmp(route->path._ptr, path, path_len) != 0) {
@@ -156,7 +156,7 @@ app_run (AppPtr app) {
 
     if (app->debug) {
         printf("\n");
-        for (u32 i = 0; i < app->routes_count; i += 1) {
+        foreach (i, app->routes_count) {
             Route route = app->routes[i];
 
             printf("    %-7s %.*s\n", 
@@ -230,7 +230,7 @@ register_route (AppPtr app, char *path, HttpType type, Controller controller) {
 
     string url = null_string();
 
-    for (u32 i = 0; i < app->route_groups_count; i += 1) {
+    foreach (i, app->route_groups_count) {
         char *group = app->route_groups[i];
 
         if (group[0] != '/') {
@@ -243,7 +243,7 @@ register_route (AppPtr app, char *path, HttpType type, Controller controller) {
     string_append(&url, str(path));
 
     // exact route has already been registered
-    for (u32 i = 0; i < app->routes_count; i += 1) {
+    foreach (i, app->routes_count) {
         Route *existing = &app->routes[i];
 
         if (existing->type == type and string_eq(existing->path, url)) {

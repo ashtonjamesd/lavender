@@ -82,7 +82,7 @@ query_id (Request request) {
 static User *
 find_user (i64 id) {
 
-    for (u32 i = 0; i < max_users; i += 1) {
+    foreach (i, max_users) {
         if (users[i].used and users[i].id == id) {
             return &users[i];
         }
@@ -102,7 +102,7 @@ approute (get_user) {
 
         pthread_mutex_lock(&users_lock);
 
-        for (u32 i = 0; i < max_users; i += 1) {
+        foreach (i, max_users) {
             if (users[i].used) {
                 yyjson_mut_arr_add_val(list, user_to_json(doc, &users[i]));
             }
@@ -159,7 +159,7 @@ approute (create_user) {
 
     User *user = null;
 
-    for (u32 i = 0; i < max_users; i += 1) {
+    foreach (i, max_users) {
         if (!users[i].used) {
             user = &users[i];
             break;

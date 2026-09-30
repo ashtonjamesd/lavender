@@ -220,7 +220,7 @@ it ("appends to a string made by string_create") {
 it ("does nothing when appending an empty string") {
 
     string s = string_create("abc");
-    byte *before = s._ptr;
+    char *before = s._ptr;
 
     string_append(&s, str(""));
     string_append(&s, null_string());
@@ -268,7 +268,7 @@ it ("handles a long run of appends") {
 
     string s = null_string();
 
-    for (u32 i = 0; i < 1000; i += 1) {
+    foreach (i, 1000) {
         string_append(&s, str("x"));
     }
 
