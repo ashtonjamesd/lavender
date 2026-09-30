@@ -147,6 +147,8 @@ build_database () {
 }
 
 int main() {
+    
+
     if (!db_open("users.db")) {
         panic("could not open database: %s", db_error());
     }
@@ -159,7 +161,10 @@ int main() {
         resource(x, user);
     }
 
+    x._do_not_serve = true;
+
     run(x);
 
     return 0;
 }
+ 

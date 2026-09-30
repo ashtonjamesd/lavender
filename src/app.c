@@ -30,6 +30,7 @@ app (u16 port) {
         .route_groups = alloc_bytes(route_groups_initial_size),
         .route_groups_capacity = initial_route_groups_capacity,
         .route_groups_count = 0,
+        ._do_not_serve = true,
     };
 }
 
@@ -158,6 +159,11 @@ app_run (AppPtr app) {
         printf("\n");
     }
 
+    if (app->_do_not_serve) {
+        cleanup_app(app);
+        return;
+    }
+
     sigset_t shutdown_signals;
     sigemptyset(&shutdown_signals);
     sigaddset(&shutdown_signals, SIGINT);
@@ -182,6 +188,7 @@ app_run (AppPtr app) {
     printf("\nreceived %s, shutting down\n", received == SIGINT ? "SIGINT" : "SIGTERM");
 
     app->server->server_stop(handle);
+
     cleanup_app(app);
 }
 

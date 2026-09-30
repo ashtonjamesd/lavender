@@ -17,6 +17,12 @@ struct App {
     bool debug;
     bool parallel;
 
+    // true if the web server will not start
+    // useful for debugging and tracking memory leaks
+    //
+    // not part of the user API
+    bool _do_not_serve;
+
     // the http server interface
     const Server *server;
 

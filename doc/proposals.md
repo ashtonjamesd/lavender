@@ -39,3 +39,8 @@ postroute (create_user) {
 We could also opt for just 'get' and 'post' instead of 'getroute', etc, as the 'route' is repetitive. However, those names are already taken by the separate route registering macros, which would have to be renamed.
 
 The 'approute' declaration would now be equivalent to calling 'use' on a route controller, as it would infer from the name of the function.
+
+
+# Arena Allocators
+
+Construct an arena for each request. This will also change how 'pool_alc' works in 'json.h'.
