@@ -3,6 +3,7 @@
 
 #include "common.h"
 #include "arena.h"
+#include "json.h"
 
 // value of a query string parameter
 #define query(name)  request_query(request, name)
@@ -36,6 +37,7 @@ struct Request {
     // freed after the response is sent
     ArenaPtr _arena;
 
+    Json json;
 };
 
 // memory that lives until the response is sent

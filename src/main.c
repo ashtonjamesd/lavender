@@ -54,16 +54,12 @@ approute (get_user) {
 // POST /api/user with {"name": "...", "email": "..."}
 approute (create_user) {
 
-    Json body = json_read(request);
-    if (!body.ok) {
-        return json_error(badRequest, "body must be a json object");
-    }
+    Json body = request.json;
 
     JsonValue *name = json_get(body, "name");
     JsonValue *email = json_get(body, "email");
 
     if (!json_is_str(name) or !json_is_str(email)) {
-        json_free(body);
         return json_error(unprocessableContent, "name and email must be strings");
     }
 
@@ -71,8 +67,6 @@ approute (create_user) {
         "insert into users (name, email) values (?, ?)", json_str(name), json_str(email)
     );
     i64 id = db_last_id();
-
-    json_free(body);
 
     if (inserted != 1) {
         return json_error(internalServerError, "could not create user");
@@ -92,16 +86,12 @@ approute (update_user) {
         return json_error(badRequest, "missing or invalid ?id=");
     }
 
-    Json body = json_read(request);
-    if (!body.ok) {
-        return json_error(badRequest, "body must be a json object");
-    }
+    Json body = request.json;
 
     JsonValue *name = json_get(body, "name");
     JsonValue *email = json_get(body, "email");
 
     if (!json_is_str(name) or !json_is_str(email)) {
-        json_free(body);
         return json_error(unprocessableContent, "name and email must be strings");
     }
 
@@ -109,8 +99,6 @@ approute (update_user) {
         "update users set name = coalesce(?, name), email = coalesce(?, email) where id = ?",
         json_str(name), json_str(email), id
     );
-
-    json_free(body);
 
     JsonObject object;
     if (!user_json(id, &object)) {

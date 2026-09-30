@@ -47,6 +47,9 @@ struct RequestContext {
     bool body_too_large;
 
     Arena arena;
+    
+    // is here for auto-freeing later
+    Json json;
 
 };
 
@@ -180,6 +183,16 @@ handle_request (
         ._arena = &context->arena,
     };
 
+    Json body = json_read(request);
+
+    if (!body.ok) {
+        // somehow handle this when json is expected
+        // return json_error(badRequest, "body must be a json object");
+    }
+
+    request.json = body;
+    context->json = body;
+
     return send_response(connection, server->handler(server->context, request));
 }
 
@@ -204,6 +217,8 @@ request_completed (
 
     string_destroy(&context->body);
     arena_free(&context->arena);
+    json_free(context->json);
+
     dealloc(context);
 
     *req_cls = null;

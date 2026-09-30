@@ -1,5 +1,7 @@
 #include "json.h"
 
+#include "request.h"
+
 static _Thread_local char pool[64 * 1024];
 static _Thread_local yyjson_alc pool_alc;
 

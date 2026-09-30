@@ -2,8 +2,9 @@
 #define json_h
 
 #include "common.h"
-#include "request.h"
 #include "response.h"
+
+typedef struct Request Request;
 
 #include "vendor/yyjson/yyjson.h"
 
@@ -14,6 +15,8 @@ typedef struct Json Json;
 struct Json {
     yyjson_doc *body;
     yyjson_val *root;
+
+    // true if no error occurred
     bool ok;
 
 };
