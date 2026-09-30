@@ -3,11 +3,10 @@
 
 #include "common.h"
 
-#include <pthread.h>
-
 #include "str.h"
 #include "route.h"
 #include "server.h"
+#include "concurrency.h"
 
 typedef struct App App, *AppPtr;
 
@@ -125,13 +124,6 @@ find_route (AppPtr app, HttpType type, const char *path, bool *path_matched);
         int _zxqj = (start_group(&(app), group), 1);  \
         _zxqj != 0; \
         end_group(&(app)), _zxqj = 0 \
-    )
-
-#define with_mutex(mutex) \
-    for ( \
-        int _lock_once = (pthread_mutex_lock(mutex), 1);  \
-        _lock_once != 0; \
-        pthread_mutex_unlock(mutex), _lock_once = 0 \
     )
 
 #endif

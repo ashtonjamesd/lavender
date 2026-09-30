@@ -138,6 +138,152 @@ it ("is safe on null") {
     expect_null(bytes);
 }
 
+
+describe ("alignment")
+
+should ("return 16-byte aligned memory for any size") {
+
+    usize sizes[] = { 1, 3, 8, 15, 16, 17, 100, 4096 };
+
+    for (u32 i = 0; i < sizeof(sizes) / sizeof(sizes[0]); i += 1) {
+        byte *bytes = alloc_bytes(sizes[i]);
+
+        expect((uintptr_t)bytes % 16 == 0);
+
+        dealloc(bytes);
+    }
+}
+
+should ("stay aligned after resizing") {
+
+    byte *bytes = alloc_bytes(5);
+
+    bytes = resize(bytes, 1000);
+    expect((uintptr_t)bytes % 16 == 0);
+
+    bytes = resize(bytes, 7);
+    expect((uintptr_t)bytes % 16 == 0);
+
+    dealloc(bytes);
+}
+
+
+describe ("live counts")
+
+should ("count each allocation and its bytes") {
+
+    usize count = mem_live_count();
+    usize bytes = mem_live_bytes();
+
+    byte *a = alloc_bytes(10);
+    byte *b = alloc_bytes(20);
+
+    expect_eq(mem_live_count(), count + 2);
+    expect_eq(mem_live_bytes(), bytes + 30);
+
+    dealloc(a);
+    dealloc(b);
+}
+
+should ("return to the starting counts after freeing") {
+
+    usize count = mem_live_count();
+    usize bytes = mem_live_bytes();
+
+    byte *a = alloc_bytes(10);
+    Point *point = alloc(Point);
+
+    dealloc(a);
+    dealloc(point);
+
+    expect_eq(mem_live_count(), count);
+    expect_eq(mem_live_bytes(), bytes);
+}
+
+should ("change only the bytes when resizing") {
+
+    usize count = mem_live_count();
+    usize bytes = mem_live_bytes();
+
+    byte *a = alloc_bytes(10);
+
+    a = resize(a, 50);
+    expect_eq(mem_live_count(), count + 1);
+    expect_eq(mem_live_bytes(), bytes + 50);
+
+    a = resize(a, 5);
+    expect_eq(mem_live_count(), count + 1);
+    expect_eq(mem_live_bytes(), bytes + 5);
+
+    dealloc(a);
+}
+
+should ("count resize from null as an allocation") {
+
+    usize count = mem_live_count();
+
+    byte *a = resize(null, 8);
+    expect_eq(mem_live_count(), count + 1);
+
+    dealloc(a);
+    expect_eq(mem_live_count(), count);
+}
+
+should ("count resize to 0 as a free") {
+
+    usize count = mem_live_count();
+
+    byte *a = alloc_bytes(8);
+    a = resize(a, 0);
+
+    expect_eq(mem_live_count(), count);
+}
+
+should ("not change the counts when freeing null") {
+
+    usize count = mem_live_count();
+    usize bytes = mem_live_bytes();
+
+    byte *nothing = null;
+    dealloc(nothing);
+
+    expect_eq(mem_live_count(), count);
+    expect_eq(mem_live_bytes(), bytes);
+}
+
+static void *
+allocate_and_free (void *unused) {
+
+    (void)unused;
+
+    for (u32 i = 0; i < 1000; i += 1) {
+        byte *a = alloc_bytes(16);
+        a = resize(a, 32);
+        dealloc(a);
+    }
+
+    return null;
+}
+
+should ("keep correct counts across threads") {
+
+    usize count = mem_live_count();
+    usize bytes = mem_live_bytes();
+
+    pthread_t threads[8];
+
+    for (u32 i = 0; i < 8; i += 1) {
+        pthread_create(&threads[i], null, allocate_and_free, null);
+    }
+
+    for (u32 i = 0; i < 8; i += 1) {
+        pthread_join(threads[i], null);
+    }
+
+    expect_eq(mem_live_count(), count);
+    expect_eq(mem_live_bytes(), bytes);
+}
+
 int
 main (void) {
 

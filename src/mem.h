@@ -2,17 +2,30 @@
 #define mem_h
 
 #include "common.h"
+#include "concurrency.h"
 
 typedef struct AllocHeader AllocHeader, *AllocHeaderPtr;
 
 struct AllocHeader {
+    AllocHeaderPtr prev;
+    AllocHeaderPtr next;
+
     const char *file;
     u32 line;
     
     // the size of the allocation
     usize size;
-
+    bool isFreed;
 };
+
+void
+mem_report (void);
+
+usize 
+mem_live_count (void);
+
+usize
+mem_live_bytes (void);
 
 ptr
 alloc_function (usize size, const char *file, u32 line);

@@ -1,5 +1,41 @@
 #include "mem.h"
 
+static usize live_allocation_count = 0;
+static usize live_bytes_allocated = 0;
+
+static pthread_mutex_t memory_lock = PTHREAD_MUTEX_INITIALIZER;
+
+void
+mem_report () {
+    with_mutex (&memory_lock) {
+        if (live_allocation_count > 0) {
+            printf("memory leaks detected: %zu bytes\n", live_bytes_allocated);
+        }
+        
+
+    }
+}
+
+usize 
+mem_live_count (void) {
+    usize n;
+    with_mutex (&memory_lock) {
+        n = live_allocation_count;
+    }
+
+    return n;
+}
+
+usize
+mem_live_bytes (void) {
+    usize n;
+    with_mutex (&memory_lock) {
+        n = live_bytes_allocated;
+    }
+
+    return n;
+}
+
 #define alignment 16
 static inline usize
 aligned_bytes_required (usize n) {
@@ -28,18 +64,22 @@ alloc_function (usize size, const char *file, u32 line) {
 
     AllocHeaderPtr allocation = (AllocHeaderPtr) malloc(total_size);
     if (allocation == null) {
-        panic("failed to allocate %zu bytes", size);
+        panic("%s:%u failed to allocate %zu bytes", file, line, size);
     }
 
     allocation->file = file;
     allocation->line = line;
     allocation->size = size;
+    allocation->isFreed = false;
+
+    with_mutex (&memory_lock) {
+        live_allocation_count +=1;
+        live_bytes_allocated += size;
+    }
 
     void *object_ptr = (bytePtr)allocation + header_size;
     return object_ptr;
 }
-
-
 
 void *
 resize_function (void *ptr, usize new_size, const char *file, u32 line) {
@@ -60,6 +100,11 @@ resize_function (void *ptr, usize new_size, const char *file, u32 line) {
         panic("%s:%u failed to resize allocation to %zu bytes", file, line, new_size);
     }
 
+    with_mutex (&memory_lock) {
+        live_bytes_allocated -= resized->size;
+        live_bytes_allocated += new_size;
+    }
+
     resized->size = new_size;
 
     return (bytePtr)resized + header_bytes();
@@ -75,5 +120,12 @@ free_function (void *ptr, const char *file, u32 line) {
     }
 
     AllocHeaderPtr allocation = alloc_header_from_object(ptr);
+    allocation->isFreed = true;
+
+    with_mutex (&memory_lock) {
+        live_allocation_count -= 1;
+        live_bytes_allocated -= allocation->size;
+    }
+
     free(allocation);
 }
