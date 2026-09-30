@@ -16,7 +16,7 @@ approute (update_user) {
     return ok("Updating User!");
 }
 
-int main() {
+int main(void) {
     App x = app(3000);
     debug(&x, true);
 

@@ -137,7 +137,7 @@ approute (delete_user) {
 
 
 void
-build_database () {
+build_database (void) {
 
     create_table ("users", (Columns) {
         integer ("id", primary_key),
@@ -146,7 +146,7 @@ build_database () {
     });
 }
 
-int main() {
+int main(void) {
     
 
     if (!db_open("users.db")) {

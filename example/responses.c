@@ -32,7 +32,7 @@ approute (teapot) {
     return imATeapot("I'm a teapot");
 }
 
-int main() {
+int main(void) {
     App x = app(3000);
     debug(&x, true);
 

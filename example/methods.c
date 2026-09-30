@@ -24,7 +24,7 @@ approute (book_options) {
     return ok("GET, POST, PUT, PATCH, DELETE, OPTIONS");
 }
 
-int main() {
+int main(void) {
     App x = app(3000);
     debug(&x, true);
 

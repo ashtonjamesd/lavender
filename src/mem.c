@@ -7,9 +7,11 @@ static pthread_mutex_t memory_lock = PTHREAD_MUTEX_INITIALIZER;
 
 static AllocHeaderPtr live_allocations = null;
 
-void
-mem_init () {
-    
+static pthread_once_t mem_initialised = PTHREAD_ONCE_INIT;
+
+static void
+mem_setup (void) {
+
     assert(live_allocation_count == 0);
     assert(live_bytes_allocated == 0);
 
@@ -17,7 +19,13 @@ mem_init () {
 }
 
 void
-mem_report () {
+mem_init (void) {
+
+    pthread_once(&mem_initialised, mem_setup);
+}
+
+void
+mem_report (void) {
     with_mutex (&memory_lock) {
 
         bool has_allocations = live_allocation_count > 0;
@@ -111,6 +119,8 @@ untrack_allocation (AllocHeaderPtr allocation) {
 
 void *
 alloc_function (usize size, const char *file, u32 line) {
+
+    mem_init();
 
     usize header_size = header_bytes();
     usize total_size = header_size + size;

@@ -19,8 +19,6 @@ app (u16 port) {
     }
     app_created = true;
     
-    mem_init();
-
     usize routes_initial_size = 
         sizeof(Route) * initial_route_capacity;
     

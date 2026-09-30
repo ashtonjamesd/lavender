@@ -40,7 +40,7 @@ approute (teapot) {
     return imATeapot("short and stout");
 }
 
-int main() {
+int main(void) {
     App x = app(3000);
     debug(&x, true);
 

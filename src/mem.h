@@ -19,9 +19,6 @@ struct AllocHeader {
     bool isFreed;
 };
 
-void 
-mem_init (void);
-
 void
 mem_report (void);
 

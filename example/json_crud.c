@@ -272,7 +272,7 @@ approute (delete_user) {
     return noContent("");
 }
 
-int main() {
+int main(void) {
     App x = app(3000);
     debug(&x, true);
 
