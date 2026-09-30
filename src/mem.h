@@ -3,6 +3,7 @@
 
 #include "common.h"
 #include "concurrency.h"
+#include "panic.h"
 
 typedef struct AllocHeader AllocHeader, *AllocHeaderPtr;
 
@@ -17,6 +18,9 @@ struct AllocHeader {
     usize size;
     bool isFreed;
 };
+
+void 
+mem_init (void);
 
 void
 mem_report (void);

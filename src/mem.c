@@ -5,21 +5,46 @@ static usize live_bytes_allocated = 0;
 
 static pthread_mutex_t memory_lock = PTHREAD_MUTEX_INITIALIZER;
 
+static AllocHeaderPtr live_allocations = null;
+
+void
+mem_init () {
+    
+    assert(live_allocation_count == 0);
+    assert(live_bytes_allocated == 0);
+
+    atexit(mem_report);
+}
+
 void
 mem_report () {
     with_mutex (&memory_lock) {
-        if (live_allocation_count > 0) {
-            printf("memory leaks detected: %zu bytes\n", live_bytes_allocated);
+
+        bool has_allocations = live_allocation_count > 0;
+
+        if (has_allocations) {
+            fprintf(
+                stderr, "memory leaks detected: %zu allocations, %zu bytes\n",
+                live_allocation_count, live_bytes_allocated
+            );
+        }
+
+        for (AllocHeaderPtr a = live_allocations; a != null; a = a->next) {
+            fprintf(stderr, "    %zu bytes allocated at %s:%u\n", a->size, a->file, a->line);
         }
         
-
+        if (has_allocations) {
+            printf("\n");
+        }
     }
 }
 
 usize 
 mem_live_count (void) {
+
     usize n;
     with_mutex (&memory_lock) {
+
         n = live_allocation_count;
     }
 
@@ -28,8 +53,10 @@ mem_live_count (void) {
 
 usize
 mem_live_bytes (void) {
+
     usize n;
     with_mutex (&memory_lock) {
+
         n = live_bytes_allocated;
     }
 
@@ -39,17 +66,47 @@ mem_live_bytes (void) {
 #define alignment 16
 static inline usize
 aligned_bytes_required (usize n) {
+
     return (n + (alignment - n % alignment) % alignment);
 }
 
 static inline usize
 header_bytes (void) {
+
     return aligned_bytes_required(sizeof(AllocHeader));
 }
 
 static inline AllocHeaderPtr
 alloc_header_from_object (void *ptr) {
+
     return (AllocHeaderPtr) ((bytePtr)ptr - header_bytes());
+}
+
+static void 
+track_allocation (AllocHeaderPtr allocation) {
+
+    allocation->prev = null;
+    allocation->next = live_allocations;
+
+    if (live_allocations != null) {
+        live_allocations->prev = allocation;
+    }
+
+    live_allocations = allocation;
+}
+
+static void
+untrack_allocation (AllocHeaderPtr allocation) {
+
+    if (allocation->prev != null) {
+        allocation->prev->next = allocation->next;
+    } else {
+        live_allocations = allocation->next;
+    }
+
+    if (allocation->next != null) {
+        allocation->next->prev = allocation->prev;
+    }
 }
 
 void *
@@ -73,6 +130,9 @@ alloc_function (usize size, const char *file, u32 line) {
     allocation->isFreed = false;
 
     with_mutex (&memory_lock) {
+
+        track_allocation(allocation);
+
         live_allocation_count +=1;
         live_bytes_allocated += size;
     }
@@ -94,6 +154,12 @@ resize_function (void *ptr, usize new_size, const char *file, u32 line) {
     }
 
     AllocHeaderPtr allocation = alloc_header_from_object(ptr);
+
+    with_mutex (&memory_lock) {
+
+        untrack_allocation(allocation);
+    }
+
     AllocHeaderPtr resized = realloc(allocation, header_bytes() + new_size);
 
     if (resized == null) {
@@ -101,8 +167,11 @@ resize_function (void *ptr, usize new_size, const char *file, u32 line) {
     }
 
     with_mutex (&memory_lock) {
+
         live_bytes_allocated -= resized->size;
         live_bytes_allocated += new_size;
+
+        track_allocation(resized);
     }
 
     resized->size = new_size;
@@ -112,6 +181,7 @@ resize_function (void *ptr, usize new_size, const char *file, u32 line) {
 
 void
 free_function (void *ptr, const char *file, u32 line) {
+    
     (void)file;
     (void)line;
 
@@ -123,6 +193,9 @@ free_function (void *ptr, const char *file, u32 line) {
     allocation->isFreed = true;
 
     with_mutex (&memory_lock) {
+
+        untrack_allocation(allocation);
+
         live_allocation_count -= 1;
         live_bytes_allocated -= allocation->size;
     }

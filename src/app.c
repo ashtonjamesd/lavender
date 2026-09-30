@@ -9,9 +9,18 @@
 
 // lets only one controller run at a time unless the app is parallel
 static pthread_mutex_t controller_lock = PTHREAD_MUTEX_INITIALIZER;
+static bool app_created = false;
 
 App 
 app (u16 port) {
+        
+    if (app_created) {
+        panic("an app has already been created");
+    }
+    app_created = true;
+    
+    mem_init();
+
     usize routes_initial_size = 
         sizeof(Route) * initial_route_capacity;
     
@@ -126,6 +135,7 @@ dispatch (ptr context, Request request) {
         response = route->controller(request);
     } else {
         with_mutex (&controller_lock) {
+
             response = route->controller(request);
         }
     }
