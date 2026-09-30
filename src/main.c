@@ -1,36 +1,6 @@
 #include "lavender.h"
 
-typedef struct User User;
-struct User {
-    i64 id;
-    char name[64];
-    char email[128];
-    bool used;
-
-};
-
-#define max_users 100
-static User users[max_users];
-static i64 next_id = 1;
-
-static void
-fill_user (JsonObject object, User *user) {
-
-    json_set_int(object, "id", user->id);
-    json_set_str(object, "name", user->name);
-    json_set_str(object, "email", user->email);
-}
-
-static JsonObject
-user_json (User *user) {
-
-    JsonObject object = json_new();
-    fill_user(object, user);
-
-    return object;
-}
-
-// reads ?id=, returning 0 if it is missing or not a positive number
+ 
 static i64
 query_id (Request request) {
 
@@ -46,28 +16,23 @@ query_id (Request request) {
     return (*end == '\0' and id > 0) ? id : 0;
 }
 
-static User *
-find_user (i64 id) {
+static bool
+user_json (i64 id, JsonObject *object) {
 
-    for (u32 i = 0; i < max_users; i += 1) {
-        if (users[i].used and users[i].id == id) {
-            return &users[i];
-        }
+    Query lookup = db_query("select id, name, email from users where id = ?", id);
+
+    bool found = db_next(lookup);
+
+    if (found) {
+        *object = json_new();
+        json_set_int(*object, "id", db_int(lookup, 0));
+        json_set_str(*object, "name", db_str(lookup, 1));
+        json_set_str(*object, "email", db_str(lookup, 2));
     }
 
-    return null;
-}
+    db_done(lookup);
 
-static User *
-free_slot (void) {
-
-    for (u32 i = 0; i < max_users; i += 1) {
-        if (!users[i].used) {
-            return &users[i];
-        }
-    }
-
-    return null;
+    return found;
 }
 
 // GET /api/user?id=1
@@ -78,12 +43,12 @@ approute (get_user) {
         return json_error(badRequest, "id must be a positive number");
     }
 
-    User *user = find_user(id);
-    if (user == null) {
+    JsonObject object;
+    if (!user_json(id, &object)) {
         return json_error(notFound, "no such user");
     }
 
-    return json(ok(json_write(user_json(user))));
+    return json(ok(json_write(object)));
 }
 
 // POST /api/user with {"name": "...", "email": "..."}
@@ -102,23 +67,21 @@ approute (create_user) {
         return json_error(unprocessableContent, "name and email must be strings");
     }
 
-    User *user = free_slot();
-
-    if (user == null) {
-        json_free(body);
-        return json_error(insufficientStorage, "too many users");
-    }
-
-    user->used = true;
-    user->id = next_id;
-    next_id += 1;
-
-    snprintf(user->name, sizeof(user->name), "%s", json_str(name));
-    snprintf(user->email, sizeof(user->email), "%s", json_str(email));
+    i32 inserted = db_run(
+        "insert into users (name, email) values (?, ?)", json_str(name), json_str(email)
+    );
+    i64 id = db_last_id();
 
     json_free(body);
 
-    return json(created(json_write(user_json(user))));
+    if (inserted != 1) {
+        return json_error(internalServerError, "could not create user");
+    }
+
+    JsonObject object;
+    user_json(id, &object);
+
+    return json(created(json_write(object)));
 }
 
 // PATCH /api/user?id=1 with {"name": "..."} and/or {"email": "..."}
@@ -129,11 +92,6 @@ approute (update_user) {
         return json_error(badRequest, "missing or invalid ?id=");
     }
 
-    User *user = find_user(id);
-    if (user == null) {
-        return json_error(notFound, "no such user");
-    }
-
     Json body = json_read(request);
     if (!body.ok) {
         return json_error(badRequest, "body must be a json object");
@@ -142,22 +100,24 @@ approute (update_user) {
     JsonValue *name = json_get(body, "name");
     JsonValue *email = json_get(body, "email");
 
-    if ((name != null and !json_is_str(name)) or (email != null and !json_is_str(email))) {
+    if (!json_is_str(name) or !json_is_str(email)) {
         json_free(body);
         return json_error(unprocessableContent, "name and email must be strings");
     }
 
-    if (name != null) {
-        snprintf(user->name, sizeof(user->name), "%s", json_str(name));
-    }
-
-    if (email != null) {
-        snprintf(user->email, sizeof(user->email), "%s", json_str(email));
-    }
+    db_run(
+        "update users set name = coalesce(?, name), email = coalesce(?, email) where id = ?",
+        json_str(name), json_str(email), id
+    );
 
     json_free(body);
 
-    return json(ok(json_write(user_json(user))));
+    JsonObject object;
+    if (!user_json(id, &object)) {
+        return json_error(notFound, "no such user");
+    }
+
+    return json(ok(json_write(object)));
 }
 
 // DELETE /api/user?id=1
@@ -168,16 +128,30 @@ approute (delete_user) {
         return json_error(badRequest, "missing or invalid ?id=");
     }
 
-    User *user = find_user(id);
-    if (user == null) {
+    if (db_run("delete from users where id = ?", id) == 0) {
         return json_error(notFound, "no such user");
     }
-    user->used = false;
 
     return noContent("");
 }
 
+
+void
+build_database () {
+
+    create_table ("users", (Columns) {
+        integer ("id", primary_key),
+        text    ("name", not_null),
+        text    ("email", not_null | unique),
+    });
+}
+
 int main() {
+    if (!db_open("users.db")) {
+        panic("could not open database: %s", db_error());
+    }
+    build_database();
+
     App x = app(3000);
     debug(&x, true);
 

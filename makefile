@@ -2,8 +2,8 @@ SRCS = $(shell find src -name "*.c")
 LIB_SRCS = $(filter-out src/main.c, $(SRCS))
 
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror $(shell pkg-config --cflags libmicrohttpd)
-LDLIBS = $(shell pkg-config --libs libmicrohttpd)
+CFLAGS = -Wall -Wextra -Werror $(shell pkg-config --cflags libmicrohttpd sqlite3)
+LDLIBS = $(shell pkg-config --libs libmicrohttpd sqlite3)
 TEST_FLAGS = -Wno-unused-function -fsanitize=address -g
 
 all:

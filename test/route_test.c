@@ -10,6 +10,7 @@ describe ("route")
 
 approute(some_get_route){ return ok(""); }
 should ("register a get route") {
+
     App x = app(1234);
 
     get(x, some_get_route);
@@ -25,6 +26,7 @@ should ("register a get route") {
 
 approute(some_post_route){ return ok(""); }
 should ("register a post route under its group") {
+
     App x = app(1234);
 
     within (x, "api") {
@@ -46,6 +48,7 @@ should ("register a post route under its group") {
 
 approute(create_thing){ return ok(""); }
 should ("infer the method from the controller name") {
+
     App x = app(1234);
 
     use(x, create_thing);
@@ -58,6 +61,7 @@ should ("infer the method from the controller name") {
 }
 
 should ("not find a path that was never registered") {
+
     App x = app(1234);
 
     get(x, some_get_route);
@@ -74,6 +78,7 @@ approute(create_item){ return ok(""); }
 approute(update_item){ return ok(""); }
 approute(delete_item){ return ok(""); }
 should ("register all four resource routes on one path") {
+
     App x = app(1234);
 
     resource(x, item);
@@ -87,6 +92,7 @@ should ("register all four resource routes on one path") {
 }
 
 should ("ignore a trailing slash on the request path") {
+
     App x = app(1234);
 
     get(x, some_get_route);
@@ -99,6 +105,7 @@ should ("ignore a trailing slash on the request path") {
 }
 
 should ("join nested groups into one path") {
+
     App x = app(1234);
 
     within (x, "api") {
@@ -114,6 +121,7 @@ should ("join nested groups into one path") {
 }
 
 should ("register a custom path and method with route") {
+
     App x = app(1234);
 
     route(x, "ping", HttpOptions, some_get_route);
@@ -127,6 +135,7 @@ should ("register a custom path and method with route") {
 }
 
 should ("register the root path") {
+
     App x = app(1234);
 
     root(x, some_get_route);
@@ -143,6 +152,7 @@ describe ("method macros")
 
 approute(replace_thing){ return ok(""); }
 should ("register a put route") {
+
     App x = app(1234);
 
     put(x, replace_thing);
@@ -156,6 +166,7 @@ should ("register a put route") {
 
 approute(edit_thing){ return ok(""); }
 should ("register a patch route") {
+
     App x = app(1234);
 
     patch(x, edit_thing);
@@ -169,6 +180,7 @@ should ("register a patch route") {
 
 approute(remove_thing){ return ok(""); }
 should ("register a delete route") {
+
     App x = app(1234);
 
     delete(x, remove_thing);
@@ -182,6 +194,7 @@ should ("register a delete route") {
 
 approute(thing_options){ return ok(""); }
 should ("register an options route") {
+
     App x = app(1234);
 
     options(x, thing_options);
@@ -194,6 +207,7 @@ should ("register an options route") {
 }
 
 should ("register a route directly with register_route") {
+
     App x = app(1234);
 
     register_route(&x, "/direct", HttpPut, some_get_route);
@@ -209,6 +223,7 @@ should ("register a route directly with register_route") {
 describe ("use")
 
 should ("infer get from a get_ prefix") {
+
     App x = app(1234);
 
     use(x, get_item);
@@ -219,6 +234,7 @@ should ("infer get from a get_ prefix") {
 
 approute(update_thing){ return ok(""); }
 should ("infer patch from an update_ prefix") {
+
     App x = app(1234);
 
     use(x, update_thing);
@@ -229,6 +245,7 @@ should ("infer patch from an update_ prefix") {
 
 approute(delete_thing){ return ok(""); }
 should ("infer delete from a delete_ prefix") {
+
     App x = app(1234);
 
     use(x, delete_thing);
@@ -239,6 +256,7 @@ should ("infer delete from a delete_ prefix") {
 
 approute(list_things){ return ok(""); }
 should ("default to get for any other name") {
+
     App x = app(1234);
 
     use(x, list_things);
@@ -251,6 +269,7 @@ should ("default to get for any other name") {
 describe ("groups")
 
 should ("not double a leading slash in a group name") {
+
     App x = app(1234);
 
     within (x, "/api") {
@@ -262,6 +281,7 @@ should ("not double a leading slash in a group name") {
 }
 
 should ("stop prefixing once the group ends") {
+
     App x = app(1234);
 
     within (x, "api") {
@@ -277,6 +297,7 @@ should ("stop prefixing once the group ends") {
 }
 
 should ("nest more groups than the initial capacity") {
+
     App x = app(1234);
     char *names[6] = { "a", "b", "c", "d", "e", "f" };
 
@@ -295,6 +316,7 @@ should ("nest more groups than the initial capacity") {
 }
 
 should ("apply groups to resource") {
+
     App x = app(1234);
 
     within (x, "api") {
@@ -312,6 +334,7 @@ should ("apply groups to resource") {
 describe ("storage")
 
 should ("keep every route when registering more than the initial capacity") {
+
     App x = app(1234);
     char path[32];
 
@@ -334,6 +357,7 @@ should ("keep every route when registering more than the initial capacity") {
 describe ("matching")
 
 should ("not match a shorter path") {
+
     App x = app(1234);
 
     get(x, some_get_route);
@@ -344,6 +368,7 @@ should ("not match a shorter path") {
 }
 
 should ("not match a longer path") {
+
     App x = app(1234);
 
     get(x, some_get_route);
@@ -354,6 +379,7 @@ should ("not match a longer path") {
 }
 
 should ("match paths case sensitively") {
+
     App x = app(1234);
 
     get(x, some_get_route);
@@ -366,6 +392,7 @@ should ("match paths case sensitively") {
 describe ("root in a group")
 
 should ("not register a root route inside a group") {
+
     App x = app(1234);
 
     within (x, "api") {
@@ -379,6 +406,7 @@ should ("not register a root route inside a group") {
 }
 
 should ("still register a root route outside a group") {
+
     App x = app(1234);
 
     within (x, "api") {
@@ -398,6 +426,7 @@ should ("still register a root route outside a group") {
 describe ("duplicate routes")
 
 should ("register the same path and method only once") {
+
     App x = app(1234);
 
     register_route(&x, "/dup", HttpGet, some_get_route);
@@ -411,6 +440,7 @@ should ("register the same path and method only once") {
 }
 
 should ("register the same path with different methods") {
+
     App x = app(1234);
 
     register_route(&x, "/dup", HttpGet, some_get_route);
@@ -420,6 +450,7 @@ should ("register the same path with different methods") {
 }
 
 should ("register the same path only once inside a group") {
+
     App x = app(1234);
 
     within (x, "api") {
@@ -431,6 +462,7 @@ should ("register the same path only once inside a group") {
 }
 
 should ("register the same name in and outside a group") {
+
     App x = app(1234);
 
     get(x, some_get_route);

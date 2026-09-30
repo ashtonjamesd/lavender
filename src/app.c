@@ -1,4 +1,5 @@
 #include "app.h"
+#include "db.h"
 
 #include <signal.h>
 #include <time.h>
@@ -56,6 +57,8 @@ cleanup_app (AppPtr app) {
 
     dealloc(app->routes);
     dealloc(app->route_groups);
+
+    db_close();
 }
 
 static const char *

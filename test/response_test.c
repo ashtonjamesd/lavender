@@ -9,6 +9,7 @@ suite_name ("response")
 describe ("respond")
 
 should ("default to no content type") {
+
     Response response = ok("hello");
 
     expect_null(response.content_type);
@@ -20,12 +21,14 @@ should ("default to no content type") {
 describe ("json")
 
 should ("set the json content type") {
+
     Response response = json(ok("{\"id\": 1}"));
 
     expect_eq(response.content_type, application_json);
 }
 
 should ("keep the status and body") {
+
     Response response = json(created("{\"id\": 2}"));
 
     expect(response.status == HttpStatusCreated);
@@ -33,6 +36,7 @@ should ("keep the status and body") {
 }
 
 should ("work with error statuses") {
+
     Response response = json(notFound("{\"error\": \"missing\"}"));
 
     expect(response.status == HttpStatusNotFound);
@@ -43,6 +47,7 @@ should ("work with error statuses") {
 describe ("with_content_type")
 
 should ("set any content type") {
+
     Response response = with_content_type(ok("<h1>hi</h1>"), "text/html");
 
     expect_eq(response.content_type, "text/html");

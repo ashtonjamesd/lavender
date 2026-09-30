@@ -38,13 +38,20 @@ More examples are in [example/](example/).
 
 ## Building
 
-Lavender requires [libmicrohttpd](https://www.gnu.org/software/libmicrohttpd/).
-
 ```sh
 make            # build
 make test       # run tests
 make examples   # build the examples
 ```
+
+
+## Dependencies
+
+Lavender requires the following.
+
+- sqlite3
+- libmicrohttpd
+- yyjson
 
 ## Documentation
 
