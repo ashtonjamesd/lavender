@@ -49,7 +49,7 @@ int main(void) {
     post(x, echo);
     get(x, teapot);
 
-    run(x);
+    run(&x);
 
     return 0;
 }

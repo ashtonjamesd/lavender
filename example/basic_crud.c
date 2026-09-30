@@ -24,7 +24,7 @@ int main(void) {
         resource(x, user);
     }
 
-    run(x);
+    run(&x);
 
     return 0;
 }

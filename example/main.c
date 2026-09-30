@@ -10,7 +10,7 @@ int main(void) {
     within (x, "my_routes")
         get(x, home);
 
-    run(x);
+    run(&x);
 
     return 0;
 }

@@ -39,7 +39,7 @@ int main(void) {
         options  (x, book_options);
     }
 
-    run(x);
+    run(&x);
 
     return 0;
 }

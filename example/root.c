@@ -8,7 +8,7 @@ int main(void) {
     App x = app(3000);
     root(x, home);
 
-    run(x);
+    run(&x);
 
     return 0;
 }

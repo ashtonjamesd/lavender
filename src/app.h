@@ -32,14 +32,22 @@ struct App {
     List(char *) route_groups;
     u32 route_groups_count;
     u32 route_groups_capacity;
+
+    // how many guards were active when each group started, to restore when it ends
+    List(u32) route_group_guard_counts;
+
+    List(Middleware) guards;
+    u32 guards_count;
+    u32 guards_capacity;
 };
 
 // initialises an app structure with a port number
 App
 app (u16 port);
 
-void 
-app_run (AppPtr);
+// starts the server and blocks until SIGINT or SIGTERM
+void
+run (AppPtr);
 
 // sets a debug flag for the application, which also logs every request
 void
@@ -67,6 +75,21 @@ register_inferred_route (AppPtr, char *path, Controller);
 
 Route *
 find_route (AppPtr app, HttpType type, const char *path, bool *path_matched);
+
+// adds a guard to every route registered after it, until the current group ends
+void
+add_guard (AppPtr, Middleware);
+
+bool
+safe_str_eq (const char *given, const char *secret);
+
+// runs a route's guards in order, then its controller if none of them stopped the request
+Response
+route_run (Route *route, Request request);
+
+// string representation of a HTTP method
+const char *
+method_name (HttpType type);
 
 // registers a GET route
 #define get(app, controller) \
@@ -99,10 +122,18 @@ find_route (AppPtr app, HttpType type, const char *path, bool *path_matched);
 // defines a HTTP route
 #define approute(name) static Response name (__attribute__((unused)) Request request)
 
-// runs the application
-#define run(x) app_run(&(x))
-// defined for consistency with passing around 'x' vs '&'
-    
+// same shape as 'approute'
+#define middleware(name) static Response name (__attribute__((unused)) Request request)
+
+#define next_status_ok 0
+
+// lets the request carry on to the next guard or the controller
+#define next() ((Response) { .status = next_status_ok })
+
+// guards every route registered after it, until the current within group ends
+#define guard(app, check) \
+    add_guard(&(app), check)
+
 // registers a controller to handle the root path
 #define root(x, controller) \
     register_route(&(x), "/", HttpGet, controller);
@@ -124,6 +155,14 @@ find_route (AppPtr app, HttpType type, const char *path, bool *path_matched);
         int _zxqj = (start_group(&(app), group), 1);  \
         _zxqj != 0; \
         end_group(&(app)), _zxqj = 0 \
+    )
+
+// guards the routes inside the block, without changing their path
+#define guarded(app, check) \
+    for ( \
+        int _zxqg = (start_group(&(app), null), add_guard(&(app), check), 1);  \
+        _zxqg != 0; \
+        end_group(&(app)), _zxqg = 0 \
     )
 
 #endif

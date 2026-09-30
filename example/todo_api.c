@@ -98,7 +98,7 @@ int main(void) {
         }
     }
 
-    run(x);
+    run(&x);
 
     return 0;
 }

@@ -8,6 +8,7 @@
 #include "response.h"
 
 typedef Response (*Controller)(Request);
+typedef Response (*Middleware)(Request);
 
 typedef struct Route Route;
 
@@ -16,6 +17,9 @@ struct Route {
     HttpType type;
 
     Controller controller;
+
+    List(Middleware) guards;
+    u32 guards_count;
 
 };
 
