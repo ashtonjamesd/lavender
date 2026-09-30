@@ -97,7 +97,7 @@ find_route (AppPtr app, HttpType type, const char *path, bool *path_matched);
     register_inferred_route(&(app), "/" #controller, controller);
 
 // defines a HTTP route
-#define approute(name) static Response name (Request request)
+#define approute(name) static Response name (__attribute__((unused)) Request request)
 
 // runs the application
 #define run(x) app_run(&(x))
