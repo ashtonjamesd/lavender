@@ -160,8 +160,6 @@ int main(void) {
         resource(x, user);
     }
 
-    x._do_not_serve = true;
-
     run(x);
 
     return 0;

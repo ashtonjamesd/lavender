@@ -37,7 +37,7 @@ app (u16 port) {
         .route_groups = alloc_bytes(route_groups_initial_size),
         .route_groups_capacity = initial_route_groups_capacity,
         .route_groups_count = 0,
-        ._do_not_serve = true,
+        ._do_not_serve = false,
     };
 }
 

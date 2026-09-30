@@ -2,6 +2,16 @@
 
 #include "server.h"
 
+ptr
+request_alloc (Request request, usize size) {
+
+    if (request._arena == null) {
+        panic("request_alloc needs a request that came from the server");
+    }
+
+    return arena_alloc(request._arena, size);
+}
+
 const char *
 request_header (Request request, const char *name) {
 

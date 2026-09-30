@@ -46,6 +46,8 @@ struct RequestContext {
     string body;
     bool body_too_large;
 
+    Arena arena;
+
 };
 
 #define max_body_size 8 * MB
@@ -132,6 +134,7 @@ handle_request (
         *context = (RequestContext) {
             .body = null_string(),
             .body_too_large = false,
+            .arena = arena_new(),
         };
 
         *req_cls = context;
@@ -174,6 +177,7 @@ handle_request (
         .body_len = body_len,
         ._server = &microhttpd_server,
         ._connection = connection,
+        ._arena = &context->arena,
     };
 
     return send_response(connection, server->handler(server->context, request));
@@ -199,7 +203,9 @@ request_completed (
     }
 
     string_destroy(&context->body);
+    arena_free(&context->arena);
     dealloc(context);
+
     *req_cls = null;
 }
 

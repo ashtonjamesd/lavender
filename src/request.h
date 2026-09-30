@@ -2,6 +2,7 @@
 #define request_h
 
 #include "common.h"
+#include "arena.h"
 
 // value of a query string parameter
 #define query(name)  request_query(request, name)
@@ -32,7 +33,14 @@ struct Request {
     const struct Server *_server;
     ptr _connection;
 
+    // freed after the response is sent
+    ArenaPtr _arena;
+
 };
+
+// memory that lives until the response is sent
+ptr
+request_alloc (Request request, usize size);
 
 // returns the value of a request header, or null if it was not sent
 const char *
