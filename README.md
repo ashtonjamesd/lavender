@@ -54,7 +54,7 @@ $ curl localhost:3000/api/v1/get_secret
 no key, no entry
 
 $ curl -H "X-Api-Key: KEY" localhost:3000/api/v1/get_secret
-{"secret":"lavender smells nice"}
+lavender smells nice
 ```
 
 More examples are in [example/](example/).
