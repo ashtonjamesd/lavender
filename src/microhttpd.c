@@ -54,17 +54,17 @@ struct RequestContext {
 static bool
 parse_method (const char *method, HttpType *type) {
 
-    if (strcmp(method, "GET") == 0 or strcmp(method, "HEAD") == 0) {
+    if (str_eq(method, "GET") or str_eq(method, "HEAD")) {
         *type = HttpGet;
-    } else if (strcmp(method, "POST") == 0) {
+    } else if (str_eq(method, "POST")) {
         *type = HttpPost;
-    } else if (strcmp(method, "PUT") == 0) {
+    } else if (str_eq(method, "PUT")) {
         *type = HttpPut;
-    } else if (strcmp(method, "PATCH") == 0) {
+    } else if (str_eq(method, "PATCH")) {
         *type = HttpPatch;
-    } else if (strcmp(method, "DELETE") == 0) {
+    } else if (str_eq(method, "DELETE")) {
         *type = HttpDelete;
-    } else if (strcmp(method, "OPTIONS") == 0) {
+    } else if (str_eq(method, "OPTIONS")) {
         *type = HttpOptions;
     } else {
         return false;
@@ -111,7 +111,7 @@ handle_request (
     void **req_cls
 ) {
 
-    (void)version;
+    unused(version);
 
     MicrohttpdServerPtr server = cls;
     RequestContextPtr context = *req_cls;
@@ -188,9 +188,9 @@ request_completed (
     enum MHD_RequestTerminationCode toe
 ) {
 
-    (void)cls;
-    (void)connection;
-    (void)toe;
+    unused(cls);
+    unused(connection);
+    unused(toe);
 
     RequestContextPtr context = *req_cls;
 
@@ -211,7 +211,7 @@ microhttpd_start (const char *host, u16 port, RequestHandler handler, ptr contex
         .sin_port = htons(port),
     };
 
-    if (strcmp(host, "localhost") == 0) {
+    if (str_eq(host, "localhost")) {
         host = "127.0.0.1";
     }
 

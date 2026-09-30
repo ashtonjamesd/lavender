@@ -7,6 +7,12 @@
 
 typedef struct AllocHeader AllocHeader, *AllocHeaderPtr;
 
+#define alignment 16
+
+#define mem_canary_head (0xDEADBEEFDEADBEEFull)
+#define mem_canary_tail (0xBAADF00DBAADF00Dull)
+
+// [header] [guard] [obj] [tail]
 struct AllocHeader {
     AllocHeaderPtr prev;
     AllocHeaderPtr next;
@@ -16,7 +22,6 @@ struct AllocHeader {
     
     // the size of the allocation
     usize size;
-    bool isFreed;
 };
 
 void
@@ -28,23 +33,26 @@ mem_live_count (void);
 usize
 mem_live_bytes (void);
 
+bool
+mem_verify (ptr x);
+
 ptr
 alloc_function (usize size, const char *file, u32 line);
 
 ptr
-resize_function (void *ptr, usize new_size, const char *file, u32 line);
+resize_function (ptr x, usize new_size, const char *file, u32 line);
 
 void
-free_function (void *ptr, const char *file, u32 line);
+free_function (ptr x, const char *file, u32 line);
 
 #define alloc_bytes(size)      alloc_function(size, __FILE__, __LINE__)
 #define alloc(type)            alloc_bytes(sizeof(type))
 
-#define resize(ptr, new_size)  resize_function(ptr, new_size, __FILE__, __LINE__)
+#define resize(x, new_size)  resize_function(x, new_size, __FILE__, __LINE__)
 
-#define dealloc(ptr) do { \
-        free_function(ptr, __FILE__, __LINE__); \
-        (ptr) = null; \
+#define dealloc(x) do { \
+        free_function(x, __FILE__, __LINE__); \
+        (x) = null; \
     } while (0)
 
 #endif

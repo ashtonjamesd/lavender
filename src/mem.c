@@ -11,9 +11,6 @@ static AllocHeaderPtr live_allocations = null;
 
 static pthread_once_t mem_initialised = PTHREAD_ONCE_INIT;
 
-#define head_guard_value 0xA110CA7EDA110CA7ull
-#define freed_guard_value 0xF4EEDF4EEDF4EED0ull
-
 static void
 mem_setup (void) {
 
@@ -76,7 +73,6 @@ mem_live_bytes (void) {
     return n;
 }
 
-#define alignment 16
 static inline usize
 aligned_bytes_required (usize n) {
 
@@ -86,13 +82,40 @@ aligned_bytes_required (usize n) {
 static inline usize
 header_bytes (void) {
 
-    return aligned_bytes_required(sizeof(AllocHeader));
+    const usize guard_size = sizeof(mem_canary_head);
+    const usize header_size = sizeof(AllocHeader);
+
+    const usize size 
+        = guard_size + header_size;
+    
+    return aligned_bytes_required(size);
 }
 
 static inline AllocHeaderPtr
 alloc_header_from_object (ptr x) {
 
     return (AllocHeaderPtr) ((bytePtr)x - header_bytes());
+}
+
+// the guard sits directly before the object, irrespective of the header size
+static inline u64Ptr
+guard_of (ptr x) {
+
+    return (u64Ptr)x - 1;
+}
+
+// the object size rounded up to 8, so the tail after it can be read as a u64
+static inline usize
+tail_offset (usize size) {
+
+    return (size + sizeof(u64) - 1) / sizeof(u64) * sizeof(u64);
+}
+
+static inline u64Ptr
+tail_of (ptr x) {
+    const AllocHeaderPtr header = alloc_header_from_object(x);
+
+    return (u64Ptr)((bytePtr)x + tail_offset(header->size));
 }
 
 static void 
@@ -122,13 +145,28 @@ untrack_allocation (AllocHeaderPtr allocation) {
     }
 }
 
+bool
+mem_verify (ptr x) {
+    
+    if (x == null) {
+        return true;
+    }
+
+    bool guard_ok = *guard_of(x) == mem_canary_head;
+    bool tail_ok = *tail_of(x) == mem_canary_tail;
+
+    return guard_ok and tail_ok;
+}
+
 ptr
 alloc_function (usize size, const char *file, u32 line) {
 
     mem_init();
 
-    usize header_size = header_bytes();
-    usize total_size = header_size + size;
+    const usize header_size = header_bytes();
+    const usize tail_size = sizeof(mem_canary_tail) + tail_offset(size);
+    
+    const usize total_size = header_size + tail_size;
 
     if (header_size % alignment != 0) {
         panic("alignment fault");
@@ -142,7 +180,11 @@ alloc_function (usize size, const char *file, u32 line) {
     allocation->file = file;
     allocation->line = line;
     allocation->size = size;
-    allocation->isFreed = false;
+
+    ptr object = (bytePtr)allocation + header_size;
+    
+    *guard_of(object) = mem_canary_head;
+    *tail_of(object) = mem_canary_tail;
 
     with_mutex (&memory_lock) {
 
@@ -152,7 +194,7 @@ alloc_function (usize size, const char *file, u32 line) {
         live_bytes_allocated += size;
     }
 
-    return (ptr)((bytePtr)allocation + header_size);
+    return object;
 }
 
 ptr
@@ -168,43 +210,56 @@ resize_function (ptr x, usize new_size, const char *file, u32 line) {
     }
 
     AllocHeaderPtr allocation = alloc_header_from_object(x);
+    usize old_size = allocation->size;
 
     with_mutex (&memory_lock) {
 
         untrack_allocation(allocation);
     }
 
-    AllocHeaderPtr resized = realloc(allocation, header_bytes() + new_size);
+    const usize header_size = header_bytes();
+    const usize tail_size = sizeof(mem_canary_tail) + tail_offset(new_size);
+    
+    const usize total_new_size = header_size + tail_size;
 
+    AllocHeaderPtr resized = realloc(allocation, total_new_size);
     if (resized == null) {
         panic("%s:%u failed to resize allocation to %zu bytes", file, line, new_size);
     }
 
+    resized->size = new_size;
+
+    ptr object = (bytePtr)resized + header_size;
+    *tail_of(object) = mem_canary_tail;
+
     with_mutex (&memory_lock) {
 
-        live_bytes_allocated -= resized->size;
+        live_bytes_allocated -= old_size;
         live_bytes_allocated += new_size;
 
         track_allocation(resized);
     }
 
-    resized->size = new_size;
-
-    return (ptr)((bytePtr)resized + header_bytes());
+    return object;
 }
 
 void
 free_function (ptr x, const char *file, u32 line) {
     
-    (void)file;
-    (void)line;
+    unused(file);
+    unused(line);
 
     if (x == null) {
         return;
     }
 
+    bool verified = mem_verify(x);
+    if (!verified) {
+        panic("%s:%u header corruption", file, line);
+    }
+
+
     AllocHeaderPtr allocation = alloc_header_from_object(x);
-    allocation->isFreed = true;
 
     with_mutex (&memory_lock) {
 
@@ -225,6 +280,13 @@ mem_init (void) {
 
 void
 mem_report (void) {
+}
+
+bool
+mem_verify (ptr x) {
+
+    unused(x);
+    return true;
 }
 
 usize
@@ -252,14 +314,14 @@ alloc_function (usize size, const char *file, u32 line) {
 }
 
 ptr 
-resize_function (ptr ptr, usize new_size, const char *file, u32 line) {
+resize_function (ptr x, usize new_size, const char *file, u32 line) {
 
     if (new_size == 0) {
-        free_function(ptr, file, line);
+        free_function(x, file, line);
         return null;
     }
 
-    ptr bytes = realloc(ptr, new_size);
+    ptr bytes = realloc(x, new_size);
 
     if (bytes == null) {
         panic("%s:%u failed to resize allocation to %zu bytes", file, line, new_size);
@@ -269,12 +331,12 @@ resize_function (ptr ptr, usize new_size, const char *file, u32 line) {
 }
 
 void
-free_function (ptr ptr, const char *file, u32 line) {
+free_function (ptr x, const char *file, u32 line) {
 
-    (void)file;
-    (void)line;
+    unused(file);
+    unused(line);
 
-    free(ptr);
+    free(x);
 }
 
 #endif

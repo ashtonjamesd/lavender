@@ -224,11 +224,12 @@ void
 register_route (AppPtr app, char *path, HttpType type, Controller controller) {
 
     // you cannot create a root route inside of a group
-    if (strcmp(path, "/") == 0 && app->route_groups_count > 0) {
+    if (str_eq(path, "/") and app->route_groups_count > 0) {
         return;
     }
 
     string url = null_string();
+
     for (u32 i = 0; i < app->route_groups_count; i += 1) {
         char *group = app->route_groups[i];
 

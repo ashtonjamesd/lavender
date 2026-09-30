@@ -5,8 +5,6 @@
 #include "request.h"
 #include "response.h"
 
-#define MB 1024 * 1024
-
 typedef Response (*RequestHandler)(ptr context, Request request);
 
 typedef struct Server Server, *ServerPtr;

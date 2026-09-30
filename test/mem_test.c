@@ -254,9 +254,9 @@ should ("not change the counts when freeing null") {
 }
 
 static void *
-allocate_and_free (void *unused) {
+allocate_and_free (void *n) {
 
-    (void)unused;
+    unused(n);
 
     for (u32 i = 0; i < 1000; i += 1) {
         byte *a = alloc_bytes(16);
@@ -284,6 +284,106 @@ should ("keep correct counts across threads") {
 
     expect_eq(mem_live_count(), count);
     expect_eq(mem_live_bytes(), bytes);
+}
+
+
+describe ("guards")
+
+should ("be intact when every byte of the object is used") {
+
+    usize sizes[] = { 1, 5, 8, 13, 16, 100 };
+
+    for (u32 i = 0; i < sizeof(sizes) / sizeof(sizes[0]); i += 1) {
+        byte *bytes = alloc_bytes(sizes[i]);
+        memset(bytes, 'x', sizes[i]);
+
+        expect(mem_verify(bytes));
+
+        dealloc(bytes);
+    }
+}
+
+should ("treat null as intact") {
+
+    expect(mem_verify(null));
+}
+
+should ("detect a write just before the object") {
+
+    byte *bytes = alloc_bytes(8);
+    bytes[-1] = 'x';
+
+    expect_not(mem_verify(bytes));
+}
+
+should ("detect a write several bytes before the object") {
+
+    byte *bytes = alloc_bytes(8);
+    bytes[-8] = 'x';
+
+    expect_not(mem_verify(bytes));
+}
+
+
+describe ("tails")
+
+should ("detect a write just past an object that fills its last 8 bytes") {
+
+    byte *bytes = alloc_bytes(16);
+    bytes[16] = 'x';
+
+    expect_not(mem_verify(bytes));
+}
+
+should ("detect a write into the tail of an object that does not fill its last 8 bytes") {
+
+    byte *bytes = alloc_bytes(5);
+    bytes[8] = 'x';
+
+    expect_not(mem_verify(bytes));
+}
+
+should ("detect a write to the last byte of the tail") {
+
+    byte *bytes = alloc_bytes(16);
+    bytes[16 + 7] = 'x';
+
+    expect_not(mem_verify(bytes));
+}
+
+should ("move the tail to the new end when growing") {
+
+    byte *bytes = alloc_bytes(8);
+    bytes = resize(bytes, 64);
+    memset(bytes, 'x', 64);
+
+    expect(mem_verify(bytes));
+
+    bytes[64] = 'x';
+    expect_not(mem_verify(bytes));
+}
+
+should ("move the tail to the new end when shrinking") {
+
+    byte *bytes = alloc_bytes(64);
+    bytes = resize(bytes, 8);
+    memset(bytes, 'x', 8);
+
+    expect(mem_verify(bytes));
+
+    bytes[8] = 'x';
+    expect_not(mem_verify(bytes));
+}
+
+should ("keep the head guard through a resize") {
+
+    byte *bytes = alloc_bytes(8);
+    bytes = resize(bytes, 1000);
+
+    expect(mem_verify(bytes));
+
+    bytes[-1] = 'x';
+    expect_not(mem_verify(bytes));
 }
 
 

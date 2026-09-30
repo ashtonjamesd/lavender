@@ -98,11 +98,10 @@ db_value_text (const char *value) {
 
 static inline DbValue
 db_value_null (void *value) {
-    (void)value;
+    unused(value);
     return (DbValue) { .type = DbNull };
 }
 
-// strings bind as text, null as NULL, and whole numbers as integers
 #define db_value(x) _Generic((x), \
         char *: db_value_text, \
         const char *: db_value_text, \
