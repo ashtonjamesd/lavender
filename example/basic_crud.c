@@ -21,10 +21,7 @@ int main(void) {
     debug(&x, true);
 
     within (x, "api/v1") {
-        use (x, get_user);
-        use (x, create_user);
-        use (x, delete_user);
-        use (x, update_user);
+        resource(x, user);
     }
 
     run(x);

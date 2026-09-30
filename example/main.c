@@ -7,7 +7,7 @@ approute (home) {
 int main(void) {
     App x = app(3000);
 
-    within (x, "api/v1")
+    within (x, "my_routes")
         get(x, home);
 
     run(x);

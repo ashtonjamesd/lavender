@@ -1,6 +1,6 @@
 # Proposals
 
-# Automatic Route Registering
+## Automatic Route Registering
 
 Today, routes are defined as functions, and then later added to a route registry.
 
@@ -41,6 +41,11 @@ We could also opt for just 'get' and 'post' instead of 'getroute', etc, as the '
 The 'approute' declaration would now be equivalent to calling 'use' on a route controller, as it would infer from the name of the function.
 
 
-# Arena Allocators
+## Arena Allocators
 
 Construct an arena for each request. This will also change how 'pool_alc' works in 'json.h'.
+
+
+## DB Transactions with Scoped Macros
+
+..
